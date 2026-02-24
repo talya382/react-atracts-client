@@ -1,0 +1,243 @@
+.products-page {
+    direction: rtl;
+    min-height: 100vh;
+    background: #04140e;
+    color: white;
+    padding-bottom: 50px;
+  }
+  
+  /* הסר את כותרת הHero */
+  .products-hero-small {
+    display: none;
+  }
+  
+  .products-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+  
+  /* כפתור מיקום */
+  .search-bar-above-map {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .location-btn {
+    background: rgba(52, 211, 153, 0.15);
+    border: 1px solid #34d399;
+    color: #34d399;
+    padding: 12px 28px;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    width: fit-content;
+    transition: all 0.3s;
+  }
+  
+  .location-btn:hover {
+    background: rgba(52, 211, 153, 0.3);
+    transform: translateY(-2px);
+  }
+  
+  .nearest-result {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(52, 211, 153, 0.08);
+    border: 1px solid rgba(52, 211, 153, 0.3);
+    border-radius: 16px;
+    padding: 20px 24px;
+    gap: 20px;
+  }
+  
+  .nearest-info h3 {
+    color: #34d399;
+    margin-bottom: 8px;
+  }
+  
+  .nearest-info p {
+    color: #aaa;
+    font-size: 0.9rem;
+    margin: 4px 0;
+  }
+  
+  /* פסקת תיאור — בסגנון הכהה */
+  .subcategory-description {
+    direction: rtl;
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(52, 211, 153, 0.2);
+    border-right: 4px solid #34d399;
+    border-radius: 20px;
+    padding: 30px 36px;
+    text-align: right;
+    margin-top: 40px; /* רווח מהתיקרה */
+  }
+  
+  .subcategory-description h2 {
+    display: none;
+  }
+ 
+.subcategory-description p {
+    font-size: 1rem;
+    color: #c0c0c0;
+    line-height: 1.9;
+    margin: 0;
+  }
+  
+  /* מפה */
+  .map-section {
+    border-radius: 24px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  }
+  
+  .leaflet-map-main {
+    height: 400px;
+    width: 100%;
+  }
+  
+  /* גריד אטרקציות */
+  .attractions-grid-modern {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
+  }
+  
+  .modern-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .modern-card:hover {
+    transform: translateY(-10px);
+    border-color: #34d399;
+    box-shadow: 0 15px 35px rgba(52, 211, 153, 0.2);
+  }
+  
+  .card-image {
+    height: 200px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+  }
+  
+  .price-badge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: #34d399;
+    color: #04140e;
+    padding: 5px 15px;
+    border-radius: 50px;
+    font-weight: bold;
+  }
+  
+  .card-content {
+    padding: 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .card-content h3 {
+    margin: 0;
+    color: #34d399;
+    font-size: 1.4rem;
+  }
+  
+  .card-desc {
+    font-size: 0.95rem;
+    color: #ccc;
+    line-height: 1.5;
+  }
+  
+  .card-footer {
+    margin-top: auto;
+    padding-top: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .buy-btn {
+    background: #34d399;
+    color: #04140e;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  
+  .buy-btn:hover {
+    background: #059669;
+    transform: scale(1.05);
+  }
+  
+  .loader-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: #34d399;
+    font-size: 1.5rem;
+    background: #04140e;
+  }
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 20px 0 0;
+    font-size: 0.95rem;
+    flex-wrap: wrap;
+    justify-content: flex-start; 
+    
+  .breadcrumb span {
+    color: #34d399;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    border-bottom: 1px solid #34d399; /* פס מתחת */
+    padding-bottom: 2px;
+  }
+  
+  .breadcrumb span:hover {
+    opacity: 0.7;
+  }
+  
+  .breadcrumb-sep {
+    color: #555 !important;
+    cursor: default !important;
+    border-bottom: none !important;
+  }
+  
+  .breadcrumb-current {
+    color: #fff !important;
+    cursor: default !important;
+    border-bottom: 1px solid #555 !important;
+  }
+  .page-title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #34d399;
+    text-align: center;
+    margin: 20px 0 0;
+    text-shadow: 0 4px 15px rgba(52, 211, 153, 0.3);
+  }

@@ -1,5 +1,5 @@
 import axios from "axios";
-let API_URL = "http://localhost:3000/users";
+let API_URL = "http://localhost:3000/user";
 
 export function loginUser(user) {
     return axios.post(API_URL + "/login", user);

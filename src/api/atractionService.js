@@ -1,18 +1,15 @@
 import axios from "axios";
-let API_URL = "http://localhost:3000/attractions";
+const API_URL = "http://localhost:3000/attractions";
 
-export function getAllAtractions() {
-  return axios.get(API_URL);
-}
-export function getAtractionById(id) {
-  return axios.get(`${API_URL}/${id}`);
-}
-export function createAtraction(atractionData) {
-  return axios.post(API_URL, atractionData);
-}
-export function updateAtraction(id, atractionData) {
-  return axios.put(`${API_URL}/${id}`, atractionData);
-}
-export function deleteAtraction(id) {
-  return axios.delete(`${API_URL}/${id}`);
-}
+export const getAllAtractions =(category, subCategory,limit=100) => {
+  const params = {};
+  if (category) params.category = category;
+  if (subCategory) params.subCategory = subCategory;
+  params.limit = limit;
+  return axios.get(API_URL, { params });
+};;
+export const getAtractionById = (id) => axios.get(`${API_URL}/${id}`);
+export const createAtraction = (newAttr) => axios.post(API_URL, newAttr);
+export const updateAtraction = (id, data) => axios.put(`${API_URL}/${id}`, data);
+export const deleteAtraction = (id) => axios.delete(`${API_URL}/${id}`);
+export const getAtractionPageCount = () => axios.get(`${API_URL}/count`);

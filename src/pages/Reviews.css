@@ -1,0 +1,237 @@
+.reviews-page {
+    direction: rtl;
+    min-height: 100vh;
+    background: #04140e;
+    color: white;
+    padding-bottom: 60px;
+  }
+  
+  .reviews-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 50px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+  
+  .reviews-header {
+    text-align: center;
+  }
+  
+  .reviews-header h1 {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #34d399;
+    margin-bottom: 8px;
+  }
+  
+  .reviews-header p {
+    color: #888;
+    font-size: 1rem;
+  }
+  
+  .avg-rating {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 16px;
+  }
+  
+  .avg-number {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #fff;
+  }
+  
+  .total-reviews {
+    color: #888;
+    font-size: 0.9rem;
+  }
+  
+  /* כוכבים */
+  .stars {
+    display: flex;
+    gap: 4px;
+  }
+  
+  .star {
+    font-size: 1.5rem;
+    color: #333;
+    cursor: pointer;
+    transition: color 0.2s;
+    user-select: none;
+  }
+  
+  .star.filled {
+    color: #fbbf24;
+  }
+  
+  /* טופס */
+  .review-form {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(52,211,153,0.2);
+    border-radius: 20px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .review-form h2 {
+    color: #fff;
+    font-size: 1.3rem;
+    margin: 0;
+  }
+  
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  
+  .review-form input,
+  .review-form textarea {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: #fff;
+    font-size: 0.95rem;
+    font-family: inherit;
+    direction: rtl;
+    transition: border 0.2s;
+    resize: vertical;
+  }
+  
+  .review-form input:focus,
+  .review-form textarea:focus {
+    outline: none;
+    border-color: #34d399;
+  }
+  
+  .review-form input::placeholder,
+  .review-form textarea::placeholder {
+    color: #555;
+  }
+  
+  .rating-select {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #aaa;
+    font-size: 0.95rem;
+  }
+  
+  .rating-select .star {
+    font-size: 2rem;
+  }
+  
+  .submit-btn {
+    background: linear-gradient(135deg, #34d399, #059669);
+    color: #04140e;
+    border: none;
+    padding: 14px;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  
+  .submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(52,211,153,0.4);
+  }
+  
+  .submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  .success-msg {
+    color: #34d399;
+    text-align: center;
+    font-weight: 600;
+  }
+  
+  /* גריד ביקורות */
+  .reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  
+  .review-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: all 0.3s;
+  }
+  
+  .review-card:hover {
+    border-color: rgba(52,211,153,0.3);
+    transform: translateY(-4px);
+  }
+  
+  .review-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .reviewer-avatar {
+    width: 44px;
+    height: 44px;
+    background: linear-gradient(135deg, #34d399, #059669);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #04140e;
+    flex-shrink: 0;
+  }
+  
+  .review-top h3 {
+    color: #fff;
+    margin: 0;
+    font-size: 1rem;
+  }
+  
+  .attraction-tag {
+    font-size: 0.8rem;
+    color: #34d399;
+  }
+  
+  .review-text {
+    color: #ccc;
+    font-size: 0.92rem;
+    line-height: 1.7;
+    margin: 0;
+  }
+  
+  .review-date {
+    color: #555;
+    font-size: 0.8rem;
+    margin-top: auto;
+  }
+  
+  .reviews-loading,
+  .no-reviews {
+    text-align: center;
+    color: #888;
+    padding: 40px;
+    font-size: 1.1rem;
+  }
+  
+  @media (max-width: 768px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .reviews-grid { grid-template-columns: 1fr; }
+  }
