@@ -1,17 +1,25 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { addToBasket } from "../features/basket/basketSlice";
+import { incrementOrder } from "../api/atractionService";
+import { useLang } from "../LanguageContext";
 import "./OrderModal.css";
 
 export default function OrderModal({ attraction, onClose }) {
   const [qty, setQty] = useState(1);
   const dispatch = useDispatch();
+  const { t, lang } = useLang();
 
   if (!attraction) return null;
 
-  const handleOrder = () => {
+  const handleOrder = async () => {
     for (let i = 0; i < qty; i++) {
       dispatch(addToBasket(attraction));
+    }
+    try {
+      await incrementOrder(attraction._id);
+    } catch (err) {
+      console.error("שגיאה בעדכון ספירה:", err);
     }
     onClose();
   };
@@ -39,22 +47,22 @@ export default function OrderModal({ attraction, onClose }) {
             </div>
             <div className="detail-item">
               <span className="detail-icon">💰</span>
-              <span>{attraction.price} ₪ לאדם</span>
+              <span>{attraction.price} ₪ {lang === 'he' ? 'לאדם' : 'per person'}</span>
             </div>
           </div>
 
           <div className="modal-qty">
-            <span>כמות כרטיסים:</span>
+            <span>{t.ticketCount}</span>
             <div className="qty-controls">
               <button onClick={() => setQty(q => Math.max(1, q - 1))}>−</button>
               <span>{qty}</span>
               <button onClick={() => setQty(q => q + 1)}>+</button>
             </div>
-            <span className="total-price">סה"כ: {attraction.price * qty} ₪</span>
+            <span className="total-price">{t.total} {attraction.price * qty} ₪</span>
           </div>
 
           <button className="modal-order-btn" onClick={handleOrder}>
-            🛒 הוסף לסל ({qty} כרטיסים)
+            🛒 {t.addToCart} ({qty} {lang === 'he' ? 'כרטיסים' : 'tickets'})
           </button>
         </div>
 

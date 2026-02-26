@@ -5,12 +5,14 @@ html, body {
   overflow-x: hidden;
 }
 
+
 #root {
   margin: 0;
   padding: 0;
   width: 100%;
   max-width: 100%;
   text-align: center;
+  background-color: transparent;
 }
 .logo {
   height: 6em;

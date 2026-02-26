@@ -13,3 +13,6 @@ export const createAtraction = (newAttr) => axios.post(API_URL, newAttr);
 export const updateAtraction = (id, data) => axios.put(`${API_URL}/${id}`, data);
 export const deleteAtraction = (id) => axios.delete(`${API_URL}/${id}`);
 export const getAtractionPageCount = () => axios.get(`${API_URL}/count`);
+export const incrementOrder = (id) =>axios.patch(`${API_URL}/${id}/order`);
+
+export const getTop10 = () =>axios.get(`${API_URL}/top10`);

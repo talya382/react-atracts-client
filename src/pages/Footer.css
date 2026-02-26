@@ -3,7 +3,8 @@
     border-top: 1px solid rgba(52, 211, 153, 0.15);
     color: #aaa;
     direction: rtl;
-    margin-top: 60px;
+    margin-top: 0;
+    margin-bottom: 0;
   }
   
   .footer-container {
@@ -93,7 +94,11 @@
     text-align: center;
     padding: 20px;
     font-size: 0.82rem;
-    color: #555;
+    background: linear-gradient(90deg, #0a3d2e, #1a6b4a, #0e7490, #0369a1);
+    background-size: 300% 300%;
+    animation: gradientShift 6s ease infinite;
+    color: #fff;
+    font-weight: 500;
   }
   
   @media (max-width: 768px) {

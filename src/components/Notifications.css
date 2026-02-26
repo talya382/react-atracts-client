@@ -1,0 +1,165 @@
+/* בועת toast */
+.notif-toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: rgba(4, 20, 14, 0.95);
+    border: 1px solid rgba(52,211,153,0.3);
+    border-radius: 14px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    max-width: 340px;
+    z-index: 9999;
+    direction: rtl;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    animation: slideIn 0.4s ease;
+  }
+  
+  .notif-urgent { border-color: rgba(239,68,68,0.5); }
+  .notif-sale { border-color: rgba(251,191,36,0.5); }
+  .notif-top { border-color: rgba(52,211,153,0.5); }
+  .notif-new { border-color: rgba(99,102,241,0.5); }
+  .notif-info { border-color: rgba(156,163,175,0.3); }
+  
+  @keyframes slideIn {
+    from { transform: translateX(100px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  
+  .notif-text {
+    color: #fff;
+    font-size: 0.88rem;
+    line-height: 1.4;
+    flex: 1;
+  }
+  
+  .notif-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  
+  .notif-dismiss {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    color: #aaa;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 0.75rem;
+    transition: all 0.2s;
+  }
+  
+  .notif-dismiss:hover { background: rgba(255,255,255,0.2); color: #fff; }
+  
+  /* פעמון */
+  .notif-bell {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    background: rgba(4,20,14,0.95);
+    border: 1px solid rgba(52,211,153,0.3);
+    border-radius: 50%;
+    width: 52px;
+    height: 52px;
+    font-size: 1.4rem;
+    cursor: pointer;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    transition: all 0.3s;
+  }
+  
+  .notif-bell:hover {
+    border-color: #34d399;
+    transform: scale(1.1);
+  }
+  
+  .notif-count {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: #ef4444;
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 700;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* פאנל */
+  .notif-panel {
+    position: fixed;
+    bottom: 90px;
+    left: 30px;
+    width: 320px;
+    background: #0a2017;
+    border: 1px solid rgba(52,211,153,0.2);
+    border-radius: 16px;
+    z-index: 9999;
+    direction: rtl;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    overflow: hidden;
+    animation: slideIn 0.3s ease;
+  }
+  
+  .notif-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  
+  .notif-panel-header h3 {
+    color: #fff;
+    margin: 0;
+    font-size: 1rem;
+  }
+  
+  .notif-panel-header button {
+    background: none;
+    border: none;
+    color: #aaa;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+  
+  .notif-panel-list {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .notif-panel-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    gap: 10px;
+    font-size: 0.85rem;
+    color: #ccc;
+    transition: background 0.2s;
+  }
+  
+  .notif-panel-item:hover { background: rgba(255,255,255,0.04); }
+  
+  .notif-panel-item button {
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: color 0.2s;
+  }
+  
+  .notif-panel-item button:hover { color: #fff; }

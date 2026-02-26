@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route,useLocation  } from "react-router-dom";
 import NavBar from "./components/NavBar";
 import ProductsList from "./pages/ProductsList";
 import AddAtraction from "./pages/AddProduct";
@@ -9,26 +9,71 @@ import Home from "./pages/Home.jsx";
 import SubCategory from "./pages/SubCategory.jsx";
 import Footer from "./pages/Footer";
 import Reviews from "./pages/Reviews";
+import Top10 from "./pages/Top10";
+import Notifications from "./components/Notifications";
+import ChatBot from "./components/ChatBot";
 import "./App.css";
+
+function AppContent() {
+  const location = useLocation();
+  const isHome = location.pathname === '/';
+
+  return (
+    <>
+      {isHome && (
+  <>
+    <video
+      src="/img/v.mp4"
+      autoPlay muted loop playsInline
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        objectFit: 'cover',
+        zIndex: 0
+      }}
+    />
+    <div style={{
+      position: 'fixed',
+      top: 0, left: 0,
+      width: '100vw',
+      height: '100vh',
+      background: 'rgba(0,0,0,0.45)',
+      zIndex: 1
+    }} />
+  </>
+)}
+<NavBar style={{ position: 'relative', zIndex: 100 }} />
+<div style={{ position: 'relative', zIndex: 2 }}>
+  <Routes>
+    <Route path="/" element={<Home />} />
+    <Route path="/top10" element={<Top10 />} />
+    <Route path="/list" element={<ProductsList />} />
+    <Route path="/list/:category" element={<SubCategory />} />
+    <Route path="/list/:category/:subCategory" element={<ProductsList />} />
+    <Route path="/add-product" element={<AddAtraction />} />
+    <Route path="/login" element={<Login />} />
+    <Route path="/signup" element={<Register />} />
+    <Route path="/basket" element={<Basket />} />
+    <Route path="/reviews" element={<Reviews />} />
+  </Routes>
+  <Footer />
+  <ChatBot />
+  <Notifications />
+</div>
+    </>
+  );
+}
 
 function App() {
   return (
     <Router>
-      <NavBar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/reviews" element={<Reviews />} />
-        <Route path="/list" element={<ProductsList />} />
-        <Route path="/list/:category" element={<SubCategory />} />
-        <Route path="/list/:category/:subCategory" element={<ProductsList />} />
-        <Route path="/add-product" element={<AddAtraction />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Register />} />
-        <Route path="/basket" element={<Basket />} />
-      </Routes>
-      <Footer />
+      <AppContent />
     </Router>
   );
 }
+
 
 export default App;

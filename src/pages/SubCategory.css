@@ -66,6 +66,8 @@
     overflow: hidden;
     transition: flex 0.7s cubic-bezier(0.25, 1, 0.5, 1);
     border: 1px solid rgba(255,255,255,0.1);
+    position: relative; /* ← ודאי שיש */
+
 }
 
 /* האפקט שאת אוהבת - התרחבות */
@@ -135,3 +137,22 @@
         height: 220px;
     }
 }
+.sub-popular-badge {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    background: linear-gradient(135deg, #f59e0b, #ef4444);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    z-index: 10;
+    box-shadow: 0 4px 12px rgba(239,68,68,0.4);
+    animation: pulse 2s infinite;
+  }
+  
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }

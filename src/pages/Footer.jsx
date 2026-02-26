@@ -1,6 +1,9 @@
 import "./Footer.css";
+import { useLang } from "../LanguageContext";
 
 export default function Footer() {
+  const { t } = useLang();
+
   return (
     <footer className="footer">
       <div className="footer-container">
@@ -8,12 +11,12 @@ export default function Footer() {
         {/* לוגו ותיאור */}
         <div className="footer-brand">
           <h2>🏔️ <span>אטרקציות</span> ישראל</h2>
-          <p>הפלטפורמה המובילה לחוויות אדרנלין ופנאי בישראל. מהים ועד השמיים — אנחנו כאן בשבילכם.</p>
+          <p>{t.footerDesc}</p>
         </div>
 
         {/* יצירת קשר */}
         <div className="footer-section">
-          <h3>📞 יצירת קשר</h3>
+          <h3>📞 {t.contact}</h3>
           <ul>
             <li>📱 03-555-1234</li>
             <li>📱 1-800-ATTRACT</li>
@@ -24,7 +27,7 @@ export default function Footer() {
 
         {/* כתובת */}
         <div className="footer-section">
-          <h3>📍 מצאו אותנו</h3>
+          <h3>📍 {t.findUs}</h3>
           <ul>
             <li>🏢 רחוב הברזל 32, תל אביב</li>
             <li>🏢 רחוב יפו 14, ירושלים</li>
@@ -35,7 +38,7 @@ export default function Footer() {
 
         {/* רשתות חברתיות */}
         <div className="footer-section">
-          <h3>🌐 עקבו אחרינו</h3>
+          <h3>🌐 {t.followUs}</h3>
           <div className="social-icons">
             <div className="social-icon" title="Instagram">
               <svg viewBox="0 0 24 24" fill="currentColor">
@@ -68,7 +71,7 @@ export default function Footer() {
       </div>
 
       <div className="footer-bottom">
-        <p>© 2025 אטרקציות ישראל — כל הזכויות שמורות</p>
+        <p>© 2025 אטרקציות ישראל — {t.rights}</p>
       </div>
     </footer>
   );

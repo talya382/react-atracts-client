@@ -168,3 +168,19 @@ html, body, #root {
   border-color: rgba(239, 68, 68, 0.7);
   color: #ef4444;
 }
+.lang-btn {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(52,211,153,0.3);
+    color: #34d399;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .lang-btn:hover {
+    background: rgba(52,211,153,0.15);
+    border-color: #34d399;
+  }
