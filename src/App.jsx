@@ -23,7 +23,7 @@ function AppContent() {
       {isHome && (
   <>
     <video
-      src="/img/v.mp4"
+      src="https://res.cloudinary.com/dwefiwwa0/video/upload/home_ppcs1n.mp4"
       autoPlay muted loop playsInline
       style={{
         position: 'fixed',
