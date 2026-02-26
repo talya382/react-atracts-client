@@ -12,7 +12,7 @@ export default function SubCategory() {
 
   const subCategories = {
     land: {
-      video: '/img/land.mp4',
+      video: 'https://res.cloudinary.com/dwefiwwa0/video/upload/land_fr4ssd.mp4',
       title: t.landTitle,
       subs: [
         { id: 'horses', title: t.horses || 'רכיבה על סוסים', icon: '🐴', img: '/img/horses/horses-4.png' },
@@ -21,7 +21,7 @@ export default function SubCategory() {
       ]
     },
     sea: {
-      video: '/img/sea.mp4',
+      video: 'https://res.cloudinary.com/dwefiwwa0/video/upload/sea_lw0sl1.mp4',
       title: t.seaTitle,
       subs: [
         { id: 'surfing', title: t.surfing || 'גלישה', icon: '🏄', img: '/img/surfing/surfing-1.png' },
@@ -30,7 +30,7 @@ export default function SubCategory() {
       ]
     },
     air: {
-      video: "/img/air.mp4",
+      video: 'https://res.cloudinary.com/dwefiwwa0/video/upload/air_phjcxw.mp4',
       title: t.airTitle,
       subs: [
         { id: 'balloon', title: t.balloon || 'כדור פורח', icon: '🎈', img: '/img/balloon/balloon-8.png' },
