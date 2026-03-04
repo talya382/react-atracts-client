@@ -12,7 +12,9 @@ import Reviews from "./pages/Reviews";
 import Top10 from "./pages/Top10";
 import Notifications from "./components/Notifications";
 import ChatBot from "./components/ChatBot";
+import CartDrawer from "./components/CartDrawer"; 
 import "./App.css";
+
 
 function AppContent() {
   const location = useLocation();
@@ -46,6 +48,7 @@ function AppContent() {
   </>
 )}
 <NavBar style={{ position: 'relative', zIndex: 100 }} />
+<CartDrawer /> 
 <div style={{ position: 'relative', zIndex: 2 }}>
   <Routes>
     <Route path="/" element={<Home />} />

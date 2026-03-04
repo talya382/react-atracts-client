@@ -8,6 +8,7 @@ import L from "leaflet";
 import "./ProductsList.css";
 import OrderModal from "./OrderModal";
 import { toggleFavorite } from "../features/favorites/favoritesSlice";
+import { addToCart } from "../features/cart/cartSlice";
 import { useLang } from "../LanguageContext";
 
 delete L.Icon.Default.prototype._getIconUrl;
@@ -315,9 +316,16 @@ export default function ProductsList() {
                 <p>📞 {nearestAtraction.phone}</p>
                 <p>💰 {nearestAtraction.price} ₪</p>
               </div>
-              <button className="buy-btn" onClick={() => setSelectedAttraction(nearestAtraction)}>
-                🛒 {t.purchaseTickets}
-              </button>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button className="buy-btn" onClick={() => setSelectedAttraction(nearestAtraction)}>
+                  {t.purchaseTickets}
+                </button>
+                <button className="buy-btn"
+                  style={{ background: 'linear-gradient(135deg, #34d399, #059669)' }}
+                  onClick={() => dispatch(addToCart(nearestAtraction))}>
+                  🛒
+                </button>
+              </div>
             </div>
           )}
         </div>
@@ -346,9 +354,21 @@ export default function ProductsList() {
                   <p className="card-desc">{item.description}</p>
                   <div className="card-footer">
                     <span>📍 {item.address?.split(",")[0]}</span>
-                    <button className="buy-btn" onClick={() => setSelectedAttraction(item)}>
-                      {t.bookNow}
-                    </button>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <button className="buy-btn" onClick={() => setSelectedAttraction(item)}>
+                        {t.bookNow}
+                      </button>
+                      <button
+                        className="buy-btn"
+                        style={{ background: 'linear-gradient(135deg, #34d399, #059669)', padding: '8px 12px' }}
+                        onClick={(e) => { 
+                          e.stopPropagation();
+                          console.log("מוסיף לסל:", item);
+                           dispatch(addToCart(item)); }}
+                      >
+                        🛒
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

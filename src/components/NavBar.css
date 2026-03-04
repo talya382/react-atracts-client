@@ -184,3 +184,39 @@ html, body, #root {
     background: rgba(52,211,153,0.15);
     border-color: #34d399;
   }
+  /* הוסיפי את זה לסוף NavBar.css */
+
+.cart-nav-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  font-family: 'Rubik', sans-serif;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.cart-nav-btn:hover {
+  color: #ffffff;
+  background: rgba(52, 211, 153, 0.1);
+}
+
+.cart-nav-count {
+  position: absolute;
+  top: 2px;
+  right: 6px;
+  background: #34d399;
+  color: #04140e;
+  font-size: 0.7rem;
+  font-weight: 700;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
