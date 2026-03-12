@@ -1,6 +1,5 @@
 import axios from "axios";
-const API_URL = "http://localhost:3000/attractions";
-
+const API_URL = "https://react-atracts-server-beityaakov.onrender.com/attractions";
 export const getAllAtractions =(category, subCategory,limit=100) => {
   const params = {};
   if (category) params.category = category;

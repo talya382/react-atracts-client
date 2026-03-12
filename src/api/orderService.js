@@ -1,5 +1,5 @@
 import axios from "axios";
-let API_URL = "http://localhost:3000/Orders";
+let API_URL = "https://react-atracts-server-beityaakov.onrender.com/orders";
 
 export function getAllOrders() {
     return axios.get(API_URL);

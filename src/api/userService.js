@@ -1,5 +1,5 @@
 import axios from "axios";
-let API_URL = "http://localhost:3000/user";
+let API_URL = "https://react-atracts-server-beityaakov.onrender.com/users";
 
 export function loginUser(user) {
     return axios.post(API_URL + "/login", user);
