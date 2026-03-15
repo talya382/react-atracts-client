@@ -1,52 +1,61 @@
-import { useState } from "react";
-import {addUser} from "../api/userService";
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useForm } from 'react-hook-form';
+import { addUser } from '../api/userService';
+import { useDispatch } from 'react-redux';
+import { userIn } from '../features/user/userSlice';
+import { useNavigate, Link } from 'react-router-dom';
+import AuthBackground from '../components/AuthBackground';
+import './Login.css';
 
-const Register = () => {
-    const [userData, setUserData] = useState({ name: "", email: "", password: "" });
+export default function Register() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const { register, handleSubmit, formState: { errors, isSubmitting }, setError } = useForm();
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setUserData({ ...userData, [name]: value });
-    };
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const onSubmit = async (data) => {
         try {
-            const res = await addUser(userData); // שימוש ב-API שלך
-            if (res.status === 201 || res.status === 200) {
-                alert("הרשמה הצליחה!");
-                
-                // שמירה ברידקס (בהנחה שיש לך Action מתאים)
-                dispatch({ type: "USER_LOGIN", payload: res.data });
-                
-                // מעבר לדף הבית
-                navigate("/products");
-            }
-        } catch (error) {
-            console.error("שגיאה בהרשמה:", error);
-            alert("ההרשמה נכשלה, נסה שנית.");
+            const res = await addUser(data);
+            dispatch(userIn(res.data));
+            navigate("/");
+        } catch (err) {
+            setError("root", { message: "ההרשמה נכשלה, נסה שנית" });
         }
     };
 
     return (
-        <div style={{ maxWidth: "400px", margin: "50px auto", textAlign: "center" }}>
-            <h2>הרשמת משתמש חדש</h2>
-            <form onSubmit={handleSubmit}>
-                <input type="text" name="name" placeholder="שם מלא" onChange={handleChange} required 
-                       style={inputStyle} />
-                <input type="email" name="email" placeholder="אימייל" onChange={handleChange} required 
-                       style={inputStyle} />
-                <input type="password" name="password" placeholder="סיסמה" onChange={handleChange} required 
-                       style={inputStyle} />
-                <button type="submit" style={{ padding: "10px 20px" }}>הירשם ושמור במערכת</button>
-            </form>
-        </div>
+        <AuthBackground>
+            <div className="auth-card">
+                <div className="auth-header">
+                    <h2>🏔️ הרשמה</h2>
+                    <p>צור חשבון חדש</p>
+                </div>
+                <form onSubmit={handleSubmit(onSubmit)} className="auth-form">
+                    <div className="auth-field">
+                        <label>שם משתמש</label>
+                        <input type="text" placeholder="השם שלך"
+                            {...register("userName", { required: "שדה חובה", minLength: { value: 2, message: "לפחות 2 תווים" } })} />
+                        {errors.userName && <span className="auth-error">{errors.userName.message}</span>}
+                    </div>
+                    <div className="auth-field">
+                        <label>אימייל</label>
+                        <input type="email" placeholder="your@email.com"
+                            {...register("email", { required: "שדה חובה" })} />
+                        {errors.email && <span className="auth-error">{errors.email.message}</span>}
+                    </div>
+                    <div className="auth-field">
+                        <label>סיסמה</label>
+                        <input type="password" placeholder="••••••••"
+                            {...register("password", { required: "שדה חובה", minLength: { value: 4, message: "לפחות 4 תווים" } })} />
+                        {errors.password && <span className="auth-error">{errors.password.message}</span>}
+                    </div>
+                    {errors.root && <p className="auth-error-root">{errors.root.message}</p>}
+                    <button type="submit" className="auth-btn" disabled={isSubmitting}>
+                        {isSubmitting ? "נרשם..." : "הירשם"}
+                    </button>
+                </form>
+                <p className="auth-switch">
+                    יש לך חשבון? <Link to="/login">התחבר כאן</Link>
+                </p>
+            </div>
+        </AuthBackground>
     );
-};
-
-const inputStyle = { display: "block", width: "100%", margin: "10px 0", padding: "8px" };
-
-export default Register;
+}

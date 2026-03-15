@@ -1,77 +1,57 @@
-import React from 'react';
-import { userIn } from '../features/user/userSlice'; // להסיר את ה-// אם הייבוא הזה קיים בספריית ה-Redux שלך
 import { useForm } from 'react-hook-form';
 import { loginUser } from '../api/userService';
 import { useDispatch } from 'react-redux';
-// import { userIn } from '../features/userSlice';
-export default function Login() {
-    let dispatch = useDispatch()
-    // אתחול ה-Hook
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-    } = useForm();
+import { userIn } from '../features/user/userSlice';
+import { useNavigate, Link } from 'react-router-dom';
+import AuthBackground from '../components/AuthBackground';
+import './Login.css';
 
-    // פונקציה שתופעל בעת שליחה מוצלחת
-    const onSubmit = (data) => {
-        console.log("נתוני התחברות:", data);
-        loginUser(data).then(res => {
-            alert("התחברת בהצלחה")
-            console.log(res.data)
-            dispatch(userIn(res.data))
-        })
+export default function Login() {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const { register, handleSubmit, formState: { errors, isSubmitting }, setError } = useForm();
+
+    const onSubmit = async (data) => {
+        try {
+            const res = await loginUser(data);
+            const { token, user } = res.data;
+            localStorage.setItem("token", token);
+            dispatch(userIn(user));
+            navigate("/");
+        } catch (err) {
+            setError("root", { message: "אימייל או סיסמה שגויים" });
+        }
     };
 
     return (
-        <div style={{ maxWidth: '400px', margin: 'auto', padding: '20px' }}>
-            <h2>התחברות</h2>
-            <form onSubmit={handleSubmit(onSubmit)}>
-
-                {/* שדה אימייל */}
-                <div style={{ marginBottom: '15px' }}>
-                    <label>אימייל:</label>
-                    <input
-                        type="email"
-                        {...register("email", {
-                            required: "שדה אימייל הוא חובה",
-                            // pattern: {
-                            //     value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                            //     message: "כתובת אימייל לא תקינה"
-                            // }
-                        })}
-                        style={{ width: '100%', padding: '8px', marginTop: '5px' }}
-                    />
-                    {errors.email && <p style={{ color: 'red', fontSize: '12px' }}>{errors.email.message}</p>}
+        <AuthBackground>
+            <div className="auth-card">
+                <div className="auth-header">
+                    <h2>🏔️ התחברות</h2>
+                    <p>ברוך הבא חזרה!</p>
                 </div>
-
-                {/* שדה סיסמה */}
-                <div style={{ marginBottom: '15px' }}>
-                    <label>סיסמה:</label>
-                    <input
-                        type="password"
-                        {...register("password", {
-                            required: "שדה סיסמה הוא חובה",
-                            minLength: {
-                                value: 4,
-                                message: "הסיסמה חייבת להכיל לפחות 6 תווים"
-                            }
-                        })}
-                        style={{ width: '100%', padding: '8px', marginTop: '5px' }}
-                    />
-                    {errors.password && <p style={{ color: 'red', fontSize: '12px' }}>{errors.password.message}</p>}
-                </div>
-
-                <button type="submit" style={{ width: '100%', padding: '10px', cursor: 'pointer' }}>
-                    התחבר
-                </button>
-            </form>
-        </div>
+                <form onSubmit={handleSubmit(onSubmit)} className="auth-form">
+                    <div className="auth-field">
+                        <label>אימייל</label>
+                        <input type="email" placeholder="your@email.com"
+                            {...register("email", { required: "שדה חובה" })} />
+                        {errors.email && <span className="auth-error">{errors.email.message}</span>}
+                    </div>
+                    <div className="auth-field">
+                        <label>סיסמה</label>
+                        <input type="password" placeholder="••••••••"
+                            {...register("password", { required: "שדה חובה", minLength: { value: 4, message: "לפחות 4 תווים" } })} />
+                        {errors.password && <span className="auth-error">{errors.password.message}</span>}
+                    </div>
+                    {errors.root && <p className="auth-error-root">{errors.root.message}</p>}
+                    <button type="submit" className="auth-btn" disabled={isSubmitting}>
+                        {isSubmitting ? "מתחבר..." : "התחבר"}
+                    </button>
+                </form>
+                <p className="auth-switch">
+                    אין לך חשבון? <Link to="/signup">הירשם כאן</Link>
+                </p>
+            </div>
+        </AuthBackground>
     );
-};
-
-
-
-
-
-
+}

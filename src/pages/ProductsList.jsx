@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
-import { getAllAtractions, getTop10 } from "../api/atractionService";
+import { getAllAtractions, getTop10, deleteAtraction } from "../api/atractionService";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import "./ProductsList.css";
@@ -67,6 +67,8 @@ export default function ProductsList() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { t, lang } = useLang();
+  const user = useSelector(state => state.user.currentUser);
+  const isAdmin = user?.role === "ADMIN";
 
   const categoryTitles = {
     land: `${t.land} 🏕️`,
@@ -120,6 +122,17 @@ export default function ProductsList() {
     };
     fetchData();
   }, [category, subCategory]);
+
+  const handleDelete = async (id, e) => {
+    e.stopPropagation();
+    if (!window.confirm("האם למחוק את האטרקציה?")) return;
+    try {
+      await deleteAtraction(id);
+      setArrAtractions(prev => prev.filter(a => a._id !== id));
+    } catch (err) {
+      alert("שגיאה במחיקה: " + (err.response?.data?.message || err.message));
+    }
+  };
 
   const filteredAtractions = arrAtractions
     .filter(item =>
@@ -206,6 +219,24 @@ export default function ProductsList() {
         <h1 className="page-title">
           {subCategoryTitles[subCategory] || categoryTitles[category] || t.allAttractions}
         </h1>
+
+        {/* כפתור הוספה למנהל */}
+        {isAdmin && (
+          <div style={{ marginBottom: '20px' }}>
+            <button
+              onClick={() => navigate("/add-product")}
+              style={{
+                background: 'linear-gradient(135deg, #34d399, #059669)',
+                color: '#fff', border: 'none', padding: '10px 20px',
+                borderRadius: '8px', fontFamily: "'Rubik', sans-serif",
+                fontWeight: '700', fontSize: '0.9rem', cursor: 'pointer',
+                boxShadow: '0 0 20px rgba(52,211,153,0.3)',
+              }}
+            >
+              ➕ הוסף אטרקציה חדשה
+            </button>
+          </div>
+        )}
 
         {descInfo && (
           <div className="subcategory-description">
@@ -344,6 +375,40 @@ export default function ProductsList() {
                 >
                   {favorites.some((f) => f._id === item._id) ? "❤️" : "🤍"}
                 </button>
+
+                {/* כפתורי מנהל על הכרטיס */}
+                {isAdmin && (
+                  <div style={{
+                    position: 'absolute', top: '10px', left: '10px',
+                    display: 'flex', gap: '6px', zIndex: 10
+                  }}>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); navigate(`/edit-product/${item._id}`); }}
+                      style={{
+                        background: 'rgba(59, 130, 246, 0.85)',
+                        border: 'none', borderRadius: '6px',
+                        color: '#fff', padding: '6px 10px',
+                        fontSize: '0.8rem', cursor: 'pointer',
+                        fontFamily: "'Rubik', sans-serif", fontWeight: '600',
+                      }}
+                    >
+                      ✏️ עריכה
+                    </button>
+                    <button
+                      onClick={(e) => handleDelete(item._id, e)}
+                      style={{
+                        background: 'rgba(239, 68, 68, 0.85)',
+                        border: 'none', borderRadius: '6px',
+                        color: '#fff', padding: '6px 10px',
+                        fontSize: '0.8rem', cursor: 'pointer',
+                        fontFamily: "'Rubik', sans-serif", fontWeight: '600',
+                      }}
+                    >
+                      🗑️ מחיקה
+                    </button>
+                  </div>
+                )}
+
                 <div className="card-image">
                   <img src={item.imgUrl} alt={item.name}
                     style={{ width: "100%", height: "250px", objectFit: "cover" }} />
@@ -361,10 +426,7 @@ export default function ProductsList() {
                       <button
                         className="buy-btn"
                         style={{ background: 'linear-gradient(135deg, #34d399, #059669)', padding: '8px 12px' }}
-                        onClick={(e) => { 
-                          e.stopPropagation();
-                          console.log("מוסיף לסל:", item);
-                           dispatch(addToCart(item)); }}
+                        onClick={(e) => { e.stopPropagation(); dispatch(addToCart(item)); }}
                       >
                         🛒
                       </button>

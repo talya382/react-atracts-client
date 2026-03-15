@@ -1,7 +1,8 @@
 import { useForm } from "react-hook-form";
-import { createAtraction } from "../api/atractionService";
-import { useNavigate } from "react-router-dom";
+import { getAtractionById, updateAtraction } from "../api/atractionService";
+import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
 import AuthBackground from '../components/AuthBackground';
 import "./AddProduct.css";
 
@@ -21,11 +22,13 @@ const subCategoryLabels = {
   balloon: "🎈 כדור פורח", parachute: "🪂 צניחה", gliding: "✈️ טיסה"
 };
 
-export default function AddProduct() {
+export default function EditProduct() {
+  const { id } = useParams();
   const navigate = useNavigate();
   const user = useSelector(state => state.user.currentUser);
-  const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm();
+  const [loadingData, setLoadingData] = useState(true);
 
+  const { register, handleSubmit, watch, reset, formState: { errors, isSubmitting } } = useForm();
   const selectedCategory = watch("category");
 
   // הגנה — רק מנהל
@@ -34,11 +37,34 @@ export default function AddProduct() {
       <div className="add-page">
         <div className="add-card">
           <h2 style={{ color: '#ef4444', textAlign: 'center' }}>🚫 גישה אסורה</h2>
-          <p style={{ color: 'rgba(255,255,255,0.5)', textAlign: 'center' }}>רק מנהל יכול לגשת לדף זה</p>
         </div>
       </div>
     );
   }
+
+  useEffect(() => {
+    getAtractionById(id)
+      .then(res => {
+        const a = res.data;
+        reset({
+          name: a.name,
+          description: a.description,
+          price: a.price,
+          phone: a.phone,
+          address: a.address,
+          category: a.category,
+          subCategory: a.subCategory,
+          imgUrl: a.imgUrl,
+          lat: a.location?.lat,
+          lng: a.location?.lng,
+        });
+        setLoadingData(false);
+      })
+      .catch(() => {
+        alert("שגיאה בטעינת האטרקציה");
+        navigate("/list");
+      });
+  }, [id]);
 
   const onSubmit = async (data) => {
     try {
@@ -52,65 +78,63 @@ export default function AddProduct() {
       };
       delete payload.lat;
       delete payload.lng;
-      await createAtraction(payload);
-      alert("✅ האטרקציה נוספה בהצלחה!");
+      await updateAtraction(id, payload);
+      alert("✅ האטרקציה עודכנה בהצלחה!");
       navigate("/list");
     } catch (err) {
-      alert("שגיאה בהוספה: " + (err.response?.data?.message || err.message));
+      alert("שגיאה בעדכון: " + (err.response?.data?.message || err.message));
     }
   };
+
+  if (loadingData) return (
+    <div className="add-page">
+      <div className="add-card" style={{ textAlign: 'center' }}>
+        <p style={{ color: '#34d399' }}>טוען נתונים...</p>
+      </div>
+    </div>
+  );
 
   return (
     <AuthBackground>
       <div className="add-card">
         <div className="add-header">
-          <h2>⚙️ הוספת אטרקציה</h2>
-          <p>מלא את הפרטים להוספת אטרקציה חדשה</p>
+          <h2>✏️ עריכת אטרקציה</h2>
+          <p>עדכן את פרטי האטרקציה</p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="add-form">
 
-          {/* שם */}
           <div className="add-field">
             <label>שם האטרקציה</label>
-            <input placeholder="לדוגמה: חוות הסוסים הגליל"
-              {...register("name", { required: "שדה חובה" })} />
+            <input {...register("name", { required: "שדה חובה" })} />
             {errors.name && <span className="add-error">{errors.name.message}</span>}
           </div>
 
-          {/* תיאור */}
           <div className="add-field">
             <label>תיאור</label>
-            <textarea rows={3} placeholder="תיאור קצר של האטרקציה..."
-              {...register("description", { required: "שדה חובה" })} />
+            <textarea rows={3} {...register("description", { required: "שדה חובה" })} />
             {errors.description && <span className="add-error">{errors.description.message}</span>}
           </div>
 
-          {/* מחיר + טלפון */}
           <div className="add-row">
             <div className="add-field">
               <label>מחיר (₪)</label>
-              <input type="number" placeholder="150"
-                {...register("price", { required: "שדה חובה", min: { value: 1, message: "מחיר חייב להיות חיובי" } })} />
+              <input type="number" {...register("price", { required: "שדה חובה", min: { value: 1, message: "מחיר חייב להיות חיובי" } })} />
               {errors.price && <span className="add-error">{errors.price.message}</span>}
             </div>
             <div className="add-field">
               <label>טלפון</label>
-              <input placeholder="04-1234567"
-                {...register("phone", { required: "שדה חובה" })} />
+              <input {...register("phone", { required: "שדה חובה" })} />
               {errors.phone && <span className="add-error">{errors.phone.message}</span>}
             </div>
           </div>
 
-          {/* כתובת */}
           <div className="add-field">
             <label>כתובת</label>
-            <input placeholder="לדוגמה: כפר בלום, גליל עליון"
-              {...register("address", { required: "שדה חובה" })} />
+            <input {...register("address", { required: "שדה חובה" })} />
             {errors.address && <span className="add-error">{errors.address.message}</span>}
           </div>
 
-          {/* קטגוריה + תת קטגוריה */}
           <div className="add-row">
             <div className="add-field">
               <label>קטגוריה</label>
@@ -134,36 +158,43 @@ export default function AddProduct() {
             </div>
           </div>
 
-          {/* URL תמונה */}
           <div className="add-field">
             <label>נתיב תמונה</label>
-            <input placeholder="/img/horses/horses-1.png"
-              {...register("imgUrl", { required: "שדה חובה" })} />
+            <input {...register("imgUrl", { required: "שדה חובה" })} />
             {errors.imgUrl && <span className="add-error">{errors.imgUrl.message}</span>}
           </div>
 
-          {/* מיקום */}
           <div className="add-row">
             <div className="add-field">
               <label>קו רוחב (lat)</label>
-              <input type="number" step="any" placeholder="32.08"
-                {...register("lat", { required: "שדה חובה" })} />
+              <input type="number" step="any" {...register("lat", { required: "שדה חובה" })} />
               {errors.lat && <span className="add-error">{errors.lat.message}</span>}
             </div>
             <div className="add-field">
               <label>קו אורך (lng)</label>
-              <input type="number" step="any" placeholder="34.78"
-                {...register("lng", { required: "שדה חובה" })} />
+              <input type="number" step="any" {...register("lng", { required: "שדה חובה" })} />
               {errors.lng && <span className="add-error">{errors.lng.message}</span>}
             </div>
           </div>
 
-          <button type="submit" className="add-btn" disabled={isSubmitting}>
-            {isSubmitting ? "מוסיף..." : "➕ הוסף אטרקציה"}
-          </button>
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <button type="submit" className="add-btn" disabled={isSubmitting} style={{ flex: 1 }}>
+              {isSubmitting ? "מעדכן..." : "💾 שמור שינויים"}
+            </button>
+            <button type="button"
+              onClick={() => navigate("/list")}
+              style={{
+                flex: 1, padding: '14px', borderRadius: '8px',
+                background: 'transparent', border: '1px solid rgba(255,255,255,0.2)',
+                color: 'rgba(255,255,255,0.6)', fontFamily: "'Rubik', sans-serif",
+                fontWeight: '600', cursor: 'pointer', fontSize: '1rem'
+              }}>
+              ביטול
+            </button>
+          </div>
 
         </form>
       </div>
-    </AuthBackground>
+      </AuthBackground>
   );
 }

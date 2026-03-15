@@ -1,13 +1,18 @@
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { logOut } from "../features/user/userSlice";
+import { toggleCart } from "../features/cart/cartSlice";
 import "./NavBar.css";
 import { useLang } from "../LanguageContext";
 
 const NavBar = () => {
     let user = useSelector(state => state.user.currentUser);
+    const cartItems = useSelector(state => state.cart.items);
+    const totalItems = cartItems.reduce((sum, item) => sum + item.qty, 0);
     let dispatch = useDispatch();
     const { lang, toggleLang, t } = useLang();
+
+    const isAdmin = user?.role === "ADMIN";
 
     return (
         <nav className="navbar">
@@ -17,9 +22,26 @@ const NavBar = () => {
             <ul className="navbar-links">
                 <li><Link to="/">{t.home}</Link></li>
                 <li><Link to="/list">{t.allAttractions}</Link></li>
-                <li><Link to="/basket">🛒 {t.basket}</Link></li>
+                <li>
+                    <button className="cart-nav-btn" onClick={() => dispatch(toggleCart())}>
+                        🛒 {t.basket}
+                        {totalItems > 0 && (
+                            <span className="cart-nav-count">{totalItems}</span>
+                        )}
+                    </button>
+                </li>
                 <li><Link to="/reviews">⭐ {t.reviews}</Link></li>
                 <li><Link to="/top10">🏆 {t.top10}</Link></li>
+
+                {/* כפתור ניהול - רק למנהל */}
+                {isAdmin && (
+                    <li>
+                        <Link to="/add-product" className="admin-btn">
+                            ⚙️ {lang === 'he' ? 'ניהול' : 'Admin'}
+                        </Link>
+                    </li>
+                )}
+
                 {!user && (
                     <>
                         <li><Link to="/login">{t.login}</Link></li>
@@ -30,6 +52,7 @@ const NavBar = () => {
                     <>
                         <li className="welcome">
                             {lang === "he" ? "שלום" : "Hello"}, {user.userName} 👋
+                            {isAdmin && <span className="admin-badge">ADMIN</span>}
                         </li>
                         <li>
                             <button className="logout-btn" onClick={() => dispatch(logOut())}>

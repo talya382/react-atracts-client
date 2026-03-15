@@ -13,6 +13,7 @@ import Top10 from "./pages/Top10";
 import Notifications from "./components/Notifications";
 import ChatBot from "./components/ChatBot";
 import CartDrawer from "./components/CartDrawer"; 
+import EditProduct from "./pages/EditProduct";
 import "./App.css";
 
 
@@ -54,6 +55,7 @@ function AppContent() {
     <Route path="/" element={<Home />} />
     <Route path="/top10" element={<Top10 />} />
     <Route path="/list" element={<ProductsList />} />
+    <Route path="/edit-product/:id" element={<EditProduct />} />
     <Route path="/list/:category" element={<SubCategory />} />
     <Route path="/list/:category/:subCategory" element={<ProductsList />} />
     <Route path="/add-product" element={<AddAtraction />} />
