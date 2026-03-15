@@ -1,6 +1,5 @@
 import axios from "axios";
-const API_URL = "http://localhost:3000/users";
-// const API_URL = "https://react-atracts-server-beityaakov.onrender.com/users";
+const API_URL = "https://react-atracts-server-beityaakov.onrender.com/users";
 
 // פונקציה שמחזירה headers עם טוקן
 const authHeaders = () => ({
