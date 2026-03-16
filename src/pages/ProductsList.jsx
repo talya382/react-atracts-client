@@ -7,9 +7,15 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import "./ProductsList.css";
 import OrderModal from "./OrderModal";
+import EditProductModal from "./EditProductModal";
 import { toggleFavorite } from "../features/favorites/favoritesSlice";
 import { addToCart } from "../features/cart/cartSlice";
 import { useLang } from "../LanguageContext";
+import Swal from "sweetalert2";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -93,6 +99,7 @@ export default function ProductsList() {
   const [userLocation, setUserLocation] = useState(null);
   const [nearestAtraction, setNearestAtraction] = useState(null);
   const [selectedAttraction, setSelectedAttraction] = useState(null);
+  const [editAttraction, setEditAttraction] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [top10Ids, setTop10Ids] = useState([]);
@@ -123,14 +130,42 @@ export default function ProductsList() {
     fetchData();
   }, [category, subCategory]);
 
-  const handleDelete = async (id, e) => {
+  const handleDelete = async (item, e) => {
     e.stopPropagation();
-    if (!window.confirm("האם למחוק את האטרקציה?")) return;
+    const result = await Swal.fire({
+      title: lang === 'he' ? 'למחוק את האטרקציה?' : 'Delete attraction?',
+      text: item.name,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#34d399',
+      confirmButtonText: lang === 'he' ? 'כן, מחק!' : 'Yes, delete!',
+      cancelButtonText: lang === 'he' ? 'ביטול' : 'Cancel',
+      background: '#04140e',
+      color: '#fff',
+    });
+
+    if (!result.isConfirmed) return;
+
     try {
-      await deleteAtraction(id);
-      setArrAtractions(prev => prev.filter(a => a._id !== id));
+      await deleteAtraction(item._id);
+      setArrAtractions(prev => prev.filter(a => a._id !== item._id));
+      Swal.fire({
+        title: lang === 'he' ? 'נמחק!' : 'Deleted!',
+        icon: 'success',
+        timer: 1500,
+        showConfirmButton: false,
+        background: '#04140e',
+        color: '#fff',
+      });
     } catch (err) {
-      alert("שגיאה במחיקה: " + (err.response?.data?.message || err.message));
+      Swal.fire({
+        title: 'שגיאה',
+        text: err.response?.data?.message || err.message,
+        icon: 'error',
+        background: '#04140e',
+        color: '#fff',
+      });
     }
   };
 
@@ -166,7 +201,10 @@ export default function ProductsList() {
         if (dist < minDist) { minDist = dist; nearest = a; }
       });
       setNearestAtraction(nearest);
-    }, () => alert(lang === 'he' ? "אנא אפשר גישה למיקום" : "Please allow location access"));
+    }, () => Swal.fire({
+      title: lang === 'he' ? 'אנא אפשר גישה למיקום' : 'Please allow location access',
+      icon: 'warning', background: '#04140e', color: '#fff'
+    }));
   }
 
   const descInfo = subCategoryDescriptions[lang]?.[subCategory];
@@ -195,75 +233,30 @@ export default function ProductsList() {
     <div className="products-page">
       <div className="products-container">
 
-        {/* breadcrumb */}
         <div className="breadcrumb">
           <span onClick={() => navigate("/")}>🏠 {t.home}</span>
-          {category && (
-            <>
-              <span className="breadcrumb-sep">←</span>
-              <span onClick={() => navigate(`/list/${category}`)}>
-                {categoryTitles[category] || category}
-              </span>
-            </>
-          )}
-          {subCategory && (
-            <>
-              <span className="breadcrumb-sep">←</span>
-              <span className="breadcrumb-current">
-                {subCategoryTitles[subCategory] || subCategory}
-              </span>
-            </>
-          )}
+          {category && (<><span className="breadcrumb-sep">←</span><span onClick={() => navigate(`/list/${category}`)}>{categoryTitles[category] || category}</span></>)}
+          {subCategory && (<><span className="breadcrumb-sep">←</span><span className="breadcrumb-current">{subCategoryTitles[subCategory] || subCategory}</span></>)}
         </div>
 
         <h1 className="page-title">
           {subCategoryTitles[subCategory] || categoryTitles[category] || t.allAttractions}
         </h1>
 
-        {/* כפתור הוספה למנהל */}
-        {isAdmin && (
-          <div style={{ marginBottom: '20px' }}>
-            <button
-              onClick={() => navigate("/add-product")}
-              style={{
-                background: 'linear-gradient(135deg, #34d399, #059669)',
-                color: '#fff', border: 'none', padding: '10px 20px',
-                borderRadius: '8px', fontFamily: "'Rubik', sans-serif",
-                fontWeight: '700', fontSize: '0.9rem', cursor: 'pointer',
-                boxShadow: '0 0 20px rgba(52,211,153,0.3)',
-              }}
-            >
-              ➕ הוסף אטרקציה חדשה
-            </button>
-          </div>
-        )}
-
-        {descInfo && (
-          <div className="subcategory-description">
-            <p>{descInfo.text}</p>
-          </div>
-        )}
+        {descInfo && <div className="subcategory-description"><p>{descInfo.text}</p></div>}
 
         {/* חיפוש */}
         <div className="search-box" style={{ position: "relative" }}>
           <span className="search-icon">🔍</span>
-          <input
-            type="text"
-            placeholder={t.search}
-            value={searchQuery}
+          <input type="text" placeholder={t.search} value={searchQuery}
             onChange={(e) => { setSearchQuery(e.target.value); setShowSuggestions(true); }}
             onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-            onFocus={() => setShowSuggestions(true)}
-            className="search-input"
-          />
-          {searchQuery && (
-            <button className="search-clear" onClick={() => { setSearchQuery(""); setShowSuggestions(false); }}>✕</button>
-          )}
+            onFocus={() => setShowSuggestions(true)} className="search-input" />
+          {searchQuery && <button className="search-clear" onClick={() => { setSearchQuery(""); setShowSuggestions(false); }}>✕</button>}
           {showSuggestions && searchQuery && filteredAtractions.length > 0 && (
             <div className="suggestions-dropdown">
               {filteredAtractions.slice(0, 5).map((item) => (
-                <div key={item._id} className="suggestion-item"
-                  onMouseDown={() => { setSearchQuery(item.name); setShowSuggestions(false); }}>
+                <div key={item._id} className="suggestion-item" onMouseDown={() => { setSearchQuery(item.name); setShowSuggestions(false); }}>
                   <span className="suggestion-name">{item.name}</span>
                   <span className="suggestion-address">📍 {item.address?.split(",")[0]}</span>
                 </div>
@@ -274,13 +267,9 @@ export default function ProductsList() {
 
         {/* פילטרים */}
         <div className="filters-bar">
-          <button className="filter-toggle-btn" onClick={() => setShowFilters(f => !f)}>
-            🎯 {t.filters} {showFilters ? '▲' : '▼'}
-          </button>
+          <button className="filter-toggle-btn" onClick={() => setShowFilters(f => !f)}>🎯 {t.filters} {showFilters ? '▲' : '▼'}</button>
           {(filters.minPrice || filters.maxPrice || filters.sortBy !== 'default') && (
-            <button className="filter-clear-btn" onClick={() => setFilters({ minPrice: '', maxPrice: '', sortBy: 'default' })}>
-              ✕ {t.clearFilters}
-            </button>
+            <button className="filter-clear-btn" onClick={() => setFilters({ minPrice: '', maxPrice: '', sortBy: 'default' })}>✕ {t.clearFilters}</button>
           )}
           <span className="filter-results">{filteredAtractions.length} {t.results}</span>
         </div>
@@ -290,11 +279,9 @@ export default function ProductsList() {
             <div className="filter-group">
               <label>💰 {t.priceRange}</label>
               <div className="price-range">
-                <input type="number" placeholder={t.minPrice} value={filters.minPrice}
-                  onChange={e => setFilters(f => ({...f, minPrice: e.target.value}))} />
+                <input type="number" placeholder={t.minPrice} value={filters.minPrice} onChange={e => setFilters(f => ({...f, minPrice: e.target.value}))} />
                 <span>—</span>
-                <input type="number" placeholder={t.maxPrice} value={filters.maxPrice}
-                  onChange={e => setFilters(f => ({...f, maxPrice: e.target.value}))} />
+                <input type="number" placeholder={t.maxPrice} value={filters.maxPrice} onChange={e => setFilters(f => ({...f, maxPrice: e.target.value}))} />
               </div>
             </div>
             <div className="filter-group">
@@ -306,11 +293,7 @@ export default function ProductsList() {
                   { value: 'price-desc', label: `💰 ${t.sortPriceDesc}` },
                   { value: 'popular', label: `🔥 ${t.sortPopular}` },
                 ].map(opt => (
-                  <button key={opt.value}
-                    className={`sort-btn ${filters.sortBy === opt.value ? 'active' : ''}`}
-                    onClick={() => setFilters(f => ({...f, sortBy: opt.value}))}>
-                    {opt.label}
-                  </button>
+                  <button key={opt.value} className={`sort-btn ${filters.sortBy === opt.value ? 'active' : ''}`} onClick={() => setFilters(f => ({...f, sortBy: opt.value}))}>{opt.label}</button>
                 ))}
               </div>
             </div>
@@ -324,21 +307,17 @@ export default function ProductsList() {
             <MapResizer />
             <MapFocuser attractions={searchQuery ? filteredAtractions : arrAtractions} />
             {userLocation && <Marker position={userLocation}><Popup>{lang === 'he' ? 'המיקום שלי' : 'My Location'}</Popup></Marker>}
-            {filteredAtractions.map((item) =>
-              item.location?.lat ? (
-                <Marker key={item._id} position={[item.location.lat, item.location.lng]}>
-                  <Popup>{item.name}<br />{item.price} ₪</Popup>
-                </Marker>
-              ) : null
-            )}
+            {filteredAtractions.map((item) => item.location?.lat ? (
+              <Marker key={item._id} position={[item.location.lat, item.location.lng]}>
+                <Popup>{item.name}<br />{item.price} ₪</Popup>
+              </Marker>
+            ) : null)}
           </MapContainer>
         </div>
 
         {/* כפתור מיקום */}
         <div className="search-bar-above-map">
-          <button className="location-btn" onClick={findNearest}>
-            📍 {t.findNearest}
-          </button>
+          <button className="location-btn" onClick={findNearest}>📍 {t.findNearest}</button>
           {nearestAtraction && (
             <div className="nearest-result">
               <div className="nearest-info">
@@ -348,27 +327,19 @@ export default function ProductsList() {
                 <p>💰 {nearestAtraction.price} ₪</p>
               </div>
               <div style={{ display: 'flex', gap: '8px' }}>
-                <button className="buy-btn" onClick={() => setSelectedAttraction(nearestAtraction)}>
-                  {t.purchaseTickets}
-                </button>
-                <button className="buy-btn"
-                  style={{ background: 'linear-gradient(135deg, #34d399, #059669)' }}
-                  onClick={() => dispatch(addToCart(nearestAtraction))}>
-                  🛒
-                </button>
+                <button className="buy-btn" onClick={() => setSelectedAttraction(nearestAtraction)}>{t.purchaseTickets}</button>
+                <button className="buy-btn" style={{ background: 'linear-gradient(135deg, #34d399, #059669)' }} onClick={() => dispatch(addToCart(nearestAtraction))}>🛒</button>
               </div>
             </div>
           )}
         </div>
 
-        {/* גריד אטרקציות */}
+        {/* גריד */}
         <div className="attractions-grid-modern">
           {filteredAtractions.length > 0 ? (
             filteredAtractions.map((item) => (
               <div key={item._id} className="modern-card">
-                {top10Ids.includes(item._id) && (
-                  <div className="popular-badge">🔥 {t.popular}</div>
-                )}
+                {top10Ids.includes(item._id) && <div className="popular-badge">🔥 {t.popular}</div>}
                 <button
                   className={`fav-btn ${favorites.some((f) => f._id === item._id) ? "active" : ""}`}
                   onClick={(e) => { e.stopPropagation(); dispatch(toggleFavorite(item)); }}
@@ -376,42 +347,32 @@ export default function ProductsList() {
                   {favorites.some((f) => f._id === item._id) ? "❤️" : "🤍"}
                 </button>
 
-                {/* כפתורי מנהל על הכרטיס */}
+                {/* כפתורי מנהל - MUI */}
                 {isAdmin && (
-                  <div style={{
-                    position: 'absolute', top: '10px', left: '10px',
-                    display: 'flex', gap: '6px', zIndex: 10
-                  }}>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); navigate(`/edit-product/${item._id}`); }}
-                      style={{
-                        background: 'rgba(59, 130, 246, 0.85)',
-                        border: 'none', borderRadius: '6px',
-                        color: '#fff', padding: '6px 10px',
-                        fontSize: '0.8rem', cursor: 'pointer',
-                        fontFamily: "'Rubik', sans-serif", fontWeight: '600',
-                      }}
-                    >
-                      ✏️ עריכה
-                    </button>
-                    <button
-                      onClick={(e) => handleDelete(item._id, e)}
-                      style={{
-                        background: 'rgba(239, 68, 68, 0.85)',
-                        border: 'none', borderRadius: '6px',
-                        color: '#fff', padding: '6px 10px',
-                        fontSize: '0.8rem', cursor: 'pointer',
-                        fontFamily: "'Rubik', sans-serif", fontWeight: '600',
-                      }}
-                    >
-                      🗑️ מחיקה
-                    </button>
+                  <div style={{ position: 'absolute', top: '10px', left: '10px', display: 'flex', flexDirection: 'column', gap: '4px', zIndex: 10 }}>
+                    <Tooltip title="עריכה">
+                      <IconButton
+                        size="small"
+                        onClick={(e) => { e.stopPropagation(); setEditAttraction(item); }}
+                        sx={{ background: 'rgba(52,211,153,0.85)', color: '#fff', '&:hover': { background: '#34d399' } }}
+                      >
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="מחיקה">
+                      <IconButton
+                        size="small"
+                        onClick={(e) => handleDelete(item, e)}
+                        sx={{ background: 'rgba(239,68,68,0.85)', color: '#fff', '&:hover': { background: '#ef4444' } }}
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
                   </div>
                 )}
 
                 <div className="card-image">
-                  <img src={item.imgUrl} alt={item.name}
-                    style={{ width: "100%", height: "250px", objectFit: "cover" }} />
+                  <img src={item.imgUrl} alt={item.name} style={{ width: "100%", height: "250px", objectFit: "cover" }} />
                   <div className="price-badge">{item.price} ₪</div>
                 </div>
                 <div className="card-content">
@@ -420,16 +381,9 @@ export default function ProductsList() {
                   <div className="card-footer">
                     <span>📍 {item.address?.split(",")[0]}</span>
                     <div style={{ display: 'flex', gap: '8px' }}>
-                      <button className="buy-btn" onClick={() => setSelectedAttraction(item)}>
-                        {t.bookNow}
-                      </button>
-                      <button
-                        className="buy-btn"
-                        style={{ background: 'linear-gradient(135deg, #34d399, #059669)', padding: '8px 12px' }}
-                        onClick={(e) => { e.stopPropagation(); dispatch(addToCart(item)); }}
-                      >
-                        🛒
-                      </button>
+                      <button className="buy-btn" onClick={() => setSelectedAttraction(item)}>{t.bookNow}</button>
+                      <button className="buy-btn" style={{ background: 'linear-gradient(135deg, #34d399, #059669)', padding: '8px 12px' }}
+                        onClick={(e) => { e.stopPropagation(); dispatch(addToCart(item)); }}>🛒</button>
                     </div>
                   </div>
                 </div>
@@ -446,12 +400,16 @@ export default function ProductsList() {
             </div>
           )}
         </div>
-
       </div>
 
-      <OrderModal
-        attraction={selectedAttraction}
-        onClose={() => setSelectedAttraction(null)}
+      <OrderModal attraction={selectedAttraction} onClose={() => setSelectedAttraction(null)} />
+      <EditProductModal
+        attraction={editAttraction}
+        onClose={() => setEditAttraction(null)}
+        onUpdate={(updated) => {
+          setArrAtractions(prev => prev.map(a => a._id === updated._id ? updated : a));
+          setEditAttraction(null);
+        }}
       />
     </div>
   );
