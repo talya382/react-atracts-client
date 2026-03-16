@@ -13,13 +13,13 @@ const categories = {
 };
 
 const categoryLabels = {
-  land: "🏕️ יבשה", sea: "🌊 ים", air: "✈️ אוויר"
+  land: " יבשה", sea: " ים", air: " אוויר"
 };
 
 const subCategoryLabels = {
-  horses: "🐴 סוסים", tractors: "🚜 טרקטורנים", rangers: "🏎️ רנג'רים",
-  surfing: "🏄 גלישה", diving: "🤿 צלילה", sailing: "⛵ שייט",
-  balloon: "🎈 כדור פורח", parachute: "🪂 צניחה", gliding: "✈️ טיסה"
+  horses: " סוסים", tractors: " טרקטורנים", rangers: " רנג'רים",
+  surfing: " גלישה", diving: " צלילה", sailing: " שייט",
+  balloon: " כדור פורח", parachute: " צניחה", gliding: " טיסה"
 };
 
 export default function EditProduct() {
