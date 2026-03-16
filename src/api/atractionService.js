@@ -1,5 +1,7 @@
 import axios from "axios";
 const API_URL = "https://react-atracts-server-beityaakov.onrender.com/attractions";
+// const API_URL = "http://localhost:3000/attractions";
+
 
 // headers עם טוקן לבקשות מוגנות
 const authHeaders = () => ({

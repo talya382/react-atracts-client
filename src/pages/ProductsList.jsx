@@ -77,22 +77,22 @@ export default function ProductsList() {
   const isAdmin = user?.role === "ADMIN";
 
   const categoryTitles = {
-    land: `${t.land} 🏕️`,
-    sea: `${t.sea} 🌊`,
-    air: `${t.air} ✈️`
-  };
+    land: t.land,
+    sea: t.sea,
+    air: t.air
+};
 
-  const subCategoryTitles = {
-    horses: `${t.horses} 🐴`,
-    tractors: `${t.tractors} 🚜`,
-    rangers: `${t.rangers} 🏎️`,
-    surfing: `${t.surfing} 🏄`,
-    diving: `${t.diving} 🤿`,
-    sailing: `${t.sailing} ⛵`,
-    balloon: `${t.balloon} 🎈`,
-    parachute: `${t.parachute} 🪂`,
-    gliding: `${t.gliding} ✈️`,
-  };
+const subCategoryTitles = {
+    horses: t.horses,
+    tractors: t.tractors,
+    rangers: t.rangers,
+    surfing: t.surfing,
+    diving: t.diving,
+    sailing: t.sailing,
+    balloon: t.balloon,
+    parachute: t.parachute,
+    gliding: t.gliding,
+};
 
   const [arrAtractions, setArrAtractions] = useState([]);
   const [loading, setLoading] = useState(true);

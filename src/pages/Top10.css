@@ -121,6 +121,14 @@
     font-size: 1.1rem;
   }
   
+  .swal2-popup {
+    background: #04140e !important;
+    color: #fff !important;
+  }
+  body{
+    background-color: #04140e !important;
+  }
+  
   @media (max-width: 768px) {
     .top10-card { flex-wrap: wrap; }
     .top10-img { width: 80px; height: 65px; }

@@ -3,7 +3,26 @@ import { useDispatch } from "react-redux";
 import { addToBasket } from "../features/basket/basketSlice";
 import { incrementOrder } from "../api/atractionService";
 import { useLang } from "../LanguageContext";
-import "./OrderModal.css";
+import Swal from "sweetalert2";
+
+// MUI
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import IconButton from "@mui/material/IconButton";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import Chip from "@mui/material/Chip";
+import CloseIcon from "@mui/icons-material/Close";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import PhoneIcon from "@mui/icons-material/Phone";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
+import DirectionsBikeIcon from "@mui/icons-material/DirectionsBike";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
+
+const darkSx = { background: '#04140e', color: '#fff' };
 
 export default function OrderModal({ attraction, onClose }) {
   const [qty, setQty] = useState(1);
@@ -13,261 +32,140 @@ export default function OrderModal({ attraction, onClose }) {
 
   if (!attraction) return null;
 
-  const handleOrder = async () => {
-    for (let i = 0; i < qty; i++) {
-      dispatch(addToBasket(attraction));
-    }
-    try {
-      await incrementOrder(attraction._id);
-    } catch (err) {
-      console.error("שגיאה בעדכון ספירה:", err);
-    }
-    onClose();
-  };
-
-  // בניית URL לחיפוש מסלולים ב-Google Maps
   const lat = attraction.location?.lat;
   const lng = attraction.location?.lng;
-  const mapsQuery =
-    lat && lng
-      ? `https://www.google.com/maps/embed/v1/search?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=hiking+cycling+trails&center=${lat},${lng}&zoom=13`
-      : `https://www.google.com/maps/embed/v1/search?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=מסלולי+טיול+${encodeURIComponent(
-          attraction.address || attraction.name
-        )}&zoom=13`;
+
+  const handleOrder = async () => {
+    for (let i = 0; i < qty; i++) dispatch(addToBasket(attraction));
+    try { await incrementOrder(attraction._id); } catch (err) { console.error(err); }
+    onClose();
+    Swal.fire({
+      title: lang === 'he' ? '✅ נוסף לסל!' : '✅ Added to cart!',
+      text: `${qty} ${lang === 'he' ? 'כרטיסים' : 'tickets'} - ${attraction.name}`,
+      icon: 'success', timer: 1800, showConfirmButton: false,
+      background: '#04140e', color: '#fff',
+    });
+  };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div
-        className={`modal-box ${showTrails ? "modal-box-wide" : ""}`}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button className="modal-close" onClick={onClose}>
-          ✕
-        </button>
+    <Dialog open={!!attraction} onClose={onClose} maxWidth={showTrails ? "lg" : "sm"} fullWidth
+      PaperProps={{ sx: { background: '#04140e', border: '1px solid rgba(52,211,153,0.2)', borderRadius: '16px', color: '#fff', direction: 'rtl', overflow: 'hidden' } }}>
 
-        <div style={{ display: "flex", gap: "0", height: "100%" }}>
-          {/* תוכן מודל רגיל */}
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div
-              className="modal-image"
-              style={{ backgroundImage: `url(${attraction.imgUrl})` }}
-            />
+      {/* כפתור סגירה */}
+      <IconButton onClick={onClose} sx={{ position: 'absolute', top: 8, left: 8, color: 'rgba(255,255,255,0.5)', zIndex: 10, '&:hover': { color: '#ef4444' } }}>
+        <CloseIcon />
+      </IconButton>
 
-            <div className="modal-content">
-              <h2>{attraction.name}</h2>
-              <p className="modal-desc">{attraction.description}</p>
+      <Box sx={{ display: 'flex', height: '100%' }}>
 
-              <div className="modal-details">
-                <div className="detail-item">
-                  <span className="detail-icon">📍</span>
-                  <span>{attraction.address}</span>
-                </div>
-                <div className="detail-item">
-                  <span className="detail-icon">📞</span>
-                  <span>{attraction.phone}</span>
-                </div>
-                <div className="detail-item">
-                  <span className="detail-icon">💰</span>
-                  <span>
-                    {attraction.price} ₪ {lang === "he" ? "לאדם" : "per person"}
-                  </span>
-                </div>
-              </div>
+        {/* תוכן ראשי */}
+        <Box sx={{ flex: 1, minWidth: 0 }}>
 
-              <div className="modal-qty">
-                <span>{t.ticketCount}</span>
-                <div className="qty-controls">
-                  <button onClick={() => setQty((q) => Math.max(1, q - 1))}>
-                    −
-                  </button>
-                  <span>{qty}</span>
-                  <button onClick={() => setQty((q) => q + 1)}>+</button>
-                </div>
-                <span className="total-price">
-                  {t.total} {attraction.price * qty} ₪
-                </span>
-              </div>
+          {/* תמונה */}
+          <Box sx={{
+            height: 220, backgroundImage: `url(${attraction.imgUrl})`,
+            backgroundSize: 'cover', backgroundPosition: 'center', position: 'relative'
+          }}>
+            <Box sx={{ position: 'absolute', bottom: 12, right: 12 }}>
+              <Chip label={`${attraction.price} ₪`} sx={{ background: 'linear-gradient(135deg, #34d399, #059669)', color: '#fff', fontWeight: 700, fontSize: '1rem', fontFamily: 'Rubik' }} />
+            </Box>
+          </Box>
 
-              <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
-                <button
-                  className="modal-order-btn"
-                  onClick={handleOrder}
-                  style={{ flex: 1 }}
-                >
-                  🛒 {t.addToCart} ({qty}{" "}
-                  {lang === "he" ? "כרטיסים" : "tickets"})
-                </button>
-                {attraction.category === "land" && (
-                  <button
-                    onClick={() => setShowTrails((s) => !s)}
-                    style={{
-                      padding: "12px 16px",
-                      background: showTrails
-                        ? "rgba(52, 211, 153, 0.2)"
-                        : "transparent",
-                      border: "1px solid rgba(52, 211, 153, 0.4)",
-                      borderRadius: "10px",
-                      color: "#34d399",
-                      fontFamily: "'Rubik', sans-serif",
-                      fontWeight: "600",
-                      fontSize: "0.85rem",
-                      cursor: "pointer",
-                      transition: "all 0.2s",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    🚴 {lang === "he" ? "מסלולים באזור" : "Nearby Trails"}
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
+          <DialogContent sx={{ pt: 2 }}>
+            <Typography variant="h5" sx={{ fontFamily: 'Rubik', fontWeight: 900, mb: 1 }}>{attraction.name}</Typography>
+            <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem', mb: 2 }}>{attraction.description}</Typography>
 
-          {/* פאנל מסלולים */}
-          {showTrails && (
-            <div
-              style={{
-                width: "380px",
-                borderLeft: "1px solid rgba(52, 211, 153, 0.2)",
-                display: "flex",
-                flexDirection: "column",
-                background: "rgba(4, 20, 14, 0.95)",
-                animation: "slideInPanel 0.3s ease-out",
-              }}
-            >
-              <div
-                style={{
-                  padding: "16px 20px",
-                  borderBottom: "1px solid rgba(52, 211, 153, 0.15)",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <h3
-                  style={{
-                    color: "#fff",
-                    fontFamily: "'Rubik', sans-serif",
-                    fontSize: "0.95rem",
-                    margin: 0,
-                  }}
-                >
-                  🚴{" "}
-                  {lang === "he"
-                    ? "מסלולים וטיולים באזור"
-                    : "Trails & Hikes Nearby"}
-                </h3>
-                <button
-                  onClick={() => setShowTrails(false)}
-                  style={{
-                    background: "transparent",
-                    border: "none",
-                    color: "rgba(255,255,255,0.5)",
-                    cursor: "pointer",
-                    fontSize: "1rem",
-                  }}
-                >
-                  ✕
-                </button>
-              </div>
+            {/* פרטים */}
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
+              {[
+                { icon: <LocationOnIcon sx={{ color: '#34d399', fontSize: 18 }} />, text: attraction.address },
+                { icon: <PhoneIcon sx={{ color: '#34d399', fontSize: 18 }} />, text: attraction.phone },
+                { icon: <AttachMoneyIcon sx={{ color: '#34d399', fontSize: 18 }} />, text: `${attraction.price} ₪ ${lang === 'he' ? 'לאדם' : 'per person'}` },
+              ].map((item, i) => (
+                <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  {item.icon}
+                  <Typography sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.88rem' }}>{item.text}</Typography>
+                </Box>
+              ))}
+            </Box>
 
-              {/* קישורים מהירים */}
-              <div
-                style={{
-                  padding: "12px 16px",
-                  display: "flex",
-                  gap: "8px",
-                  flexWrap: "wrap",
-                  borderBottom: "1px solid rgba(52,211,153,0.1)",
-                }}
-              >
-                {[
-                  {
-                    label: lang === "he" ? "🚴 אופניים" : "🚴 Cycling",
-                    q: "cycling trails",
-                  },
-                  {
-                    label: lang === "he" ? "🥾 טיול רגלי" : "🥾 Hiking",
-                    q: "hiking trails",
-                  },
-                  {
-                    label: lang === "he" ? "💧 נחלים" : "💧 Streams",
-                    q: "נחל",
-                  },
-                ].map((opt) => (
-                  <a
-                    key={opt.q}
-                    href={`https://www.google.com/maps/search/${encodeURIComponent(
-                      opt.q + " near " + (attraction.address || attraction.name)
-                    )}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      padding: "6px 12px",
-                      background: "rgba(52, 211, 153, 0.1)",
-                      border: "1px solid rgba(52, 211, 153, 0.3)",
-                      borderRadius: "20px",
-                      color: "#34d399",
-                      fontSize: "0.8rem",
-                      fontFamily: "'Rubik', sans-serif",
-                      textDecoration: "none",
-                      fontWeight: "600",
-                    }}
-                  >
-                    {opt.label}
-                  </a>
-                ))}
-              </div>
+            {/* כמות */}
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(52,211,153,0.05)', border: '1px solid rgba(52,211,153,0.15)', borderRadius: '10px', p: 1.5, mb: 2 }}>
+              <Typography sx={{ fontFamily: 'Rubik', fontWeight: 600 }}>{t.ticketCount}</Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <IconButton size="small" onClick={() => setQty(q => Math.max(1, q - 1))}
+                  sx={{ background: 'rgba(52,211,153,0.1)', color: '#34d399', '&:hover': { background: 'rgba(52,211,153,0.2)' } }}>
+                  <RemoveIcon fontSize="small" />
+                </IconButton>
+                <Typography sx={{ fontWeight: 700, minWidth: 28, textAlign: 'center', fontSize: '1.1rem' }}>{qty}</Typography>
+                <IconButton size="small" onClick={() => setQty(q => q + 1)}
+                  sx={{ background: 'rgba(52,211,153,0.1)', color: '#34d399', '&:hover': { background: 'rgba(52,211,153,0.2)' } }}>
+                  <AddIcon fontSize="small" />
+                </IconButton>
+              </Box>
+              <Typography sx={{ color: '#34d399', fontWeight: 700, fontSize: '1.1rem' }}>{attraction.price * qty} ₪</Typography>
+            </Box>
 
-              {/* מפה */}
-              <div style={{ flex: 1, position: "relative" }}>
-                <iframe
-                  title="trails-map"
-                  width="100%"
-                  height="100%"
-                  style={{ border: "none", minHeight: "350px" }}
-                  loading="lazy"
-                  allowFullScreen
-                  src={`https://maps.google.com/maps?q=מסלולי+טיול+${encodeURIComponent(
-                    attraction.address || attraction.name
-                  )}&output=embed&z=13`}
-                />
-              </div>
+            {/* כפתורים */}
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              <Button fullWidth variant="contained" startIcon={<ShoppingCartIcon />} onClick={handleOrder}
+                sx={{ background: 'linear-gradient(135deg, #34d399, #059669)', fontFamily: 'Rubik', fontWeight: 700, py: 1.2, boxShadow: '0 0 20px rgba(52,211,153,0.3)', '&:hover': { boxShadow: '0 0 30px rgba(52,211,153,0.5)' } }}>
+                {t.addToCart} ({qty})
+              </Button>
+              {attraction.category === 'land' && (
+                <Button variant="outlined" startIcon={<DirectionsBikeIcon />}
+                  onClick={() => setShowTrails(s => !s)}
+                  sx={{ color: '#34d399', borderColor: 'rgba(52,211,153,0.4)', fontFamily: 'Rubik', fontWeight: 600, whiteSpace: 'nowrap', background: showTrails ? 'rgba(52,211,153,0.1)' : 'transparent', '&:hover': { borderColor: '#34d399', background: 'rgba(52,211,153,0.1)' } }}>
+                  {lang === 'he' ? 'מסלולים' : 'Trails'}
+                </Button>
+              )}
+            </Box>
+          </DialogContent>
+        </Box>
 
-              <div
-                style={{
-                  padding: "12px 16px",
-                  borderTop: "1px solid rgba(52,211,153,0.1)",
-                }}
-              >
-                <a
-                  href={`https://www.google.com/maps/search/hiking+trails/@${
-                    lat || 32
-                  },${lng || 35},13z`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    display: "block",
-                    textAlign: "center",
-                    padding: "10px",
-                    background: "linear-gradient(135deg, #34d399, #059669)",
-                    borderRadius: "8px",
-                    color: "#fff",
-                    fontFamily: "'Rubik', sans-serif",
-                    fontWeight: "700",
-                    fontSize: "0.88rem",
-                    textDecoration: "none",
-                  }}
-                >
-                  {lang === "he"
-                    ? "🗺️ פתח ב-Google Maps"
-                    : "🗺️ Open in Google Maps"}
+        {/* פאנל מסלולים */}
+        {showTrails && (
+          <Box sx={{ width: 360, borderRight: '1px solid rgba(52,211,153,0.2)', display: 'flex', flexDirection: 'column', animation: 'slideInPanel 0.3s ease-out' }}>
+            <Box sx={{ p: 2, borderBottom: '1px solid rgba(52,211,153,0.15)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Typography sx={{ fontFamily: 'Rubik', fontWeight: 700, fontSize: '0.95rem' }}>
+                🚴 {lang === 'he' ? 'מסלולים וטיולים באזור' : 'Trails & Hikes Nearby'}
+              </Typography>
+              <IconButton size="small" onClick={() => setShowTrails(false)} sx={{ color: 'rgba(255,255,255,0.4)' }}>
+                <CloseIcon fontSize="small" />
+              </IconButton>
+            </Box>
+
+            <Box sx={{ p: 1.5, display: 'flex', gap: 1, flexWrap: 'wrap', borderBottom: '1px solid rgba(52,211,153,0.1)' }}>
+              {[
+                { label: lang === 'he' ? '🚴 אופניים' : '🚴 Cycling', q: 'cycling trails' },
+                { label: lang === 'he' ? '🥾 טיול רגלי' : '🥾 Hiking', q: 'hiking trails' },
+                { label: lang === 'he' ? '💧 נחלים' : '💧 Streams', q: 'נחל' },
+              ].map(opt => (
+                <a key={opt.q}
+                  href={`https://www.google.com/maps/search/${encodeURIComponent(opt.q + ' near ' + (attraction.address || attraction.name))}`}
+                  target="_blank" rel="noopener noreferrer"
+                  style={{ padding: '5px 12px', background: 'rgba(52,211,153,0.1)', border: '1px solid rgba(52,211,153,0.3)', borderRadius: '20px', color: '#34d399', fontSize: '0.8rem', fontFamily: 'Rubik', textDecoration: 'none', fontWeight: 600 }}>
+                  {opt.label}
                 </a>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+              ))}
+            </Box>
+
+            <Box sx={{ flex: 1 }}>
+              <iframe title="trails-map" width="100%" height="100%"
+                style={{ border: 'none', minHeight: '300px' }} loading="lazy" allowFullScreen
+                src={`https://maps.google.com/maps?q=מסלולי+טיול+${encodeURIComponent(attraction.address || attraction.name)}&output=embed&z=13`} />
+            </Box>
+
+            <Box sx={{ p: 1.5, borderTop: '1px solid rgba(52,211,153,0.1)' }}>
+              <a href={`https://www.google.com/maps/search/hiking+trails/@${lat || 32},${lng || 35},13z`}
+                target="_blank" rel="noopener noreferrer"
+                style={{ display: 'block', textAlign: 'center', padding: '10px', background: 'linear-gradient(135deg, #34d399, #059669)', borderRadius: '8px', color: '#fff', fontFamily: 'Rubik', fontWeight: 700, fontSize: '0.88rem', textDecoration: 'none' }}>
+                {lang === 'he' ? '🗺️ פתח ב-Google Maps' : '🗺️ Open in Google Maps'}
+              </a>
+            </Box>
+          </Box>
+        )}
+      </Box>
+    </Dialog>
   );
 }

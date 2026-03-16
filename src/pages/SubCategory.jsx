@@ -80,8 +80,7 @@ export default function SubCategory() {
               )}
               <div className="sub-panel-overlay"></div>
               <div className="sub-panel-content">
-                <span className="sub-icon">{sub.icon}</span>
-                <h2>{sub.title}</h2>
+              <h2>{sub.title}</h2>
                 <div className="sub-action-btn">{t.enterCategory}</div>
               </div>
             </div>

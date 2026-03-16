@@ -44,11 +44,10 @@ export default function Home() {
   const { t } = useLang();
 
   const categories = [
-    { id: 'air', title: t.air, desc: t.airDesc, img: '/img/air.png', icon: '✈️' },
-    { id: 'sea', title: t.sea, desc: t.seaDesc, img: '/img/surfing/surfing-2.png', icon: '🌊' },
-    { id: 'land', title: t.land, desc: t.landDesc, img: '/img/land.jpg.png', icon: '🏕️' },
-  ];
-
+    { id: 'air', title: t.air, desc: t.airDesc, img: '/img/air.png' },
+    { id: 'sea', title: t.sea, desc: t.seaDesc, img: '/img/surfing/surfing-2.png' },
+    { id: 'land', title: t.land, desc: t.landDesc, img: '/img/land.jpg.png' },
+];
   const stats = [
     { label: t.happyCustomers, value: 5000, suffix: '+' },
     { label: t.attractions, value: 63, suffix: '' },
@@ -74,7 +73,6 @@ export default function Home() {
             >
               <div className="card-overlay"></div>
               <div className="card-inner-content">
-                <span className="card-icon">{cat.icon}</span>
                 <h2>{cat.title}</h2>
                 <p className="card-description">{cat.desc}</p>
                 <div className="card-action">{t.viewAttractions}</div>
