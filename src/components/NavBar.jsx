@@ -31,12 +31,14 @@ const NavBar = () => {
     const isAdmin = user?.role === "ADMIN";
 
     return (
-        <AppBar position="sticky" sx={{
+        <AppBar position="fixed" sx={{
             background: 'rgba(4, 20, 14, 0.92)',
             backdropFilter: 'blur(20px)',
             borderBottom: '1px solid rgba(52, 211, 153, 0.15)',
             boxShadow: '0 4px 40px rgba(0,0,0,0.4)',
-            zIndex: 1000,
+            zIndex: 9999,
+            top: 0,
+            width: '100%',
         }}>
             <Toolbar sx={{ justifyContent: 'space-between', direction: 'rtl', px: { xs: 2, md: 4 } }}>
 
