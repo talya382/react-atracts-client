@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { removeFromBasket, clearBasket, decreaseQty, addToBasket } from "../features/basket/basketSlice";
 import { Link } from "react-router-dom";
@@ -13,16 +14,38 @@ import Card from "@mui/material/Card";
 import CardMedia from "@mui/material/CardMedia";
 import Divider from "@mui/material/Divider";
 import Chip from "@mui/material/Chip";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import TextField from "@mui/material/TextField";
+import Grid from "@mui/material/Grid";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import PaymentIcon from "@mui/icons-material/Payment";
+import LockIcon from "@mui/icons-material/Lock";
+import CreditCardIcon from "@mui/icons-material/CreditCard";
+
+const inputSx = {
+  '& .MuiOutlinedInput-root': {
+    color: '#fff', fontFamily: 'Rubik',
+    '& fieldset': { borderColor: 'rgba(52,211,153,0.3)' },
+    '&:hover fieldset': { borderColor: '#34d399' },
+    '&.Mui-focused fieldset': { borderColor: '#34d399' },
+  },
+  '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.6)', fontFamily: 'Rubik' },
+  '& .MuiInputLabel-root.Mui-focused': { color: '#34d399' },
+};
 
 const Basket = () => {
   const dispatch = useDispatch();
   const items = useSelector(state => state.basket.arr);
   const { lang } = useLang();
+  const [paymentOpen, setPaymentOpen] = useState(false);
+  const [cardData, setCardData] = useState({ name: '', number: '', expiry: '', cvv: '' });
+  const [processing, setProcessing] = useState(false);
 
   const totalQuantity = items.reduce((sum, item) => sum + item.qty, 0);
   const totalPrice = items.reduce((sum, item) => sum + item.qty * item.price, 0);
@@ -43,6 +66,32 @@ const Basket = () => {
     }).then(result => { if (result.isConfirmed) dispatch(clearBasket()); });
   };
 
+  const formatCardNumber = (val) => {
+    return val.replace(/\D/g, '').slice(0, 16).replace(/(.{4})/g, '$1 ').trim();
+  };
+
+  const formatExpiry = (val) => {
+    return val.replace(/\D/g, '').slice(0, 4).replace(/(.{2})/, '$1/');
+  };
+
+  const handlePay = async () => {
+    if (!cardData.name || !cardData.number || !cardData.expiry || !cardData.cvv) {
+      Swal.fire({ title: lang === 'he' ? 'נא למלא את כל השדות' : 'Please fill all fields', icon: 'warning', background: '#04140e', color: '#fff' });
+      return;
+    }
+    setProcessing(true);
+    await new Promise(r => setTimeout(r, 2000));
+    setProcessing(false);
+    setPaymentOpen(false);
+    dispatch(clearBasket());
+    Swal.fire({
+      title: lang === 'he' ? '🎉 התשלום בוצע בהצלחה!' : '🎉 Payment Successful!',
+      text: lang === 'he' ? `שולם ${totalPrice} ₪` : `Paid ${totalPrice} ₪`,
+      icon: 'success', background: '#04140e', color: '#fff',
+      confirmButtonColor: '#34d399',
+    });
+  };
+
   if (items.length === 0) return (
     <Box sx={{ minHeight: '80vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2, direction: 'rtl' }}>
       <ShoppingCartIcon sx={{ fontSize: 80, color: 'rgba(52,211,153,0.3)' }} />
@@ -60,7 +109,6 @@ const Basket = () => {
         <ShoppingCartIcon sx={{ color: '#34d399' }} /> {tr.title}
       </Typography>
 
-      {/* פריטים */}
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 3 }}>
         {items.map(item => (
           <Card key={item._id} sx={{ background: 'rgba(4,20,14,0.85)', border: '1px solid rgba(52,211,153,0.15)', borderRadius: '12px', display: 'flex', overflow: 'hidden', color: '#fff' }}>
@@ -92,7 +140,6 @@ const Basket = () => {
         ))}
       </Box>
 
-      {/* סיכום */}
       <Card sx={{ background: 'rgba(4,20,14,0.92)', border: '1px solid rgba(52,211,153,0.2)', borderRadius: '12px', p: 3, color: '#fff' }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
           <Typography sx={{ fontFamily: 'Rubik', color: 'rgba(255,255,255,0.7)' }}>{tr.total}</Typography>
@@ -108,12 +155,103 @@ const Basket = () => {
             sx={{ color: 'rgba(239,68,68,0.7)', borderColor: 'rgba(239,68,68,0.3)', fontFamily: 'Rubik', fontWeight: 600, '&:hover': { borderColor: '#ef4444', background: 'rgba(239,68,68,0.05)', color: '#ef4444' } }}>
             {tr.clearCart}
           </Button>
-          <Button fullWidth variant="contained" startIcon={<PaymentIcon />}
+          <Button fullWidth variant="contained" startIcon={<PaymentIcon />} onClick={() => setPaymentOpen(true)}
             sx={{ background: 'linear-gradient(135deg, #34d399, #059669)', fontFamily: 'Rubik', fontWeight: 700, boxShadow: '0 0 20px rgba(52,211,153,0.3)', '&:hover': { boxShadow: '0 0 30px rgba(52,211,153,0.5)' } }}>
             {tr.checkout}
           </Button>
         </Box>
       </Card>
+
+      {/* מודל תשלום */}
+      <Dialog open={paymentOpen} onClose={() => setPaymentOpen(false)} maxWidth="sm" fullWidth
+        PaperProps={{ sx: { background: '#04140e', border: '1px solid rgba(52,211,153,0.2)', borderRadius: '16px', color: '#fff', direction: 'rtl' } }}>
+        
+        <DialogTitle sx={{ fontFamily: 'Rubik', fontWeight: 900, borderBottom: '1px solid rgba(52,211,153,0.15)', pb: 2 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <CreditCardIcon sx={{ color: '#34d399' }} />
+            {lang === 'he' ? 'פרטי תשלום' : 'Payment Details'}
+            <LockIcon sx={{ color: 'rgba(255,255,255,0.3)', fontSize: 16, mr: 'auto' }} />
+          </Box>
+        </DialogTitle>
+
+        <DialogContent sx={{ pt: 3 }}>
+          {/* כרטיס ויזואלי */}
+          <Box sx={{
+            background: 'linear-gradient(135deg, #1a4a3a, #0d2b22)',
+            border: '1px solid rgba(52,211,153,0.3)',
+            borderRadius: '12px', p: 3, mb: 3,
+            position: 'relative', overflow: 'hidden',
+          }}>
+            <Box sx={{ position: 'absolute', top: -20, right: -20, width: 120, height: 120, borderRadius: '50%', background: 'rgba(52,211,153,0.05)' }} />
+            <Box sx={{ position: 'absolute', bottom: -30, left: -30, width: 150, height: 150, borderRadius: '50%', background: 'rgba(52,211,153,0.05)' }} />
+            <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontFamily: 'Rubik', fontSize: '0.8rem', mb: 1 }}>
+              {lang === 'he' ? 'מספר כרטיס' : 'Card Number'}
+            </Typography>
+            <Typography sx={{ fontFamily: 'monospace', fontSize: '1.3rem', letterSpacing: 4, color: '#fff', mb: 2 }}>
+              {cardData.number || '•••• •••• •••• ••••'}
+            </Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+              <Box>
+                <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem' }}>{lang === 'he' ? 'שם בעל הכרטיס' : 'Cardholder'}</Typography>
+                <Typography sx={{ fontFamily: 'Rubik', fontWeight: 600 }}>{cardData.name || (lang === 'he' ? 'שם מלא' : 'Full Name')}</Typography>
+              </Box>
+              <Box>
+                <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem' }}>{lang === 'he' ? 'תוקף' : 'Expiry'}</Typography>
+                <Typography sx={{ fontFamily: 'Rubik', fontWeight: 600 }}>{cardData.expiry || 'MM/YY'}</Typography>
+              </Box>
+              <Box sx={{ background: 'linear-gradient(135deg, #34d399, #059669)', px: 1.5, py: 0.5, borderRadius: '6px', display: 'flex', alignItems: 'center' }}>
+                <Typography sx={{ fontFamily: 'Rubik', fontWeight: 900, fontSize: '0.85rem' }}>VISA</Typography>
+              </Box>
+            </Box>
+          </Box>
+
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField fullWidth label={lang === 'he' ? 'שם בעל הכרטיס' : 'Cardholder Name'} sx={inputSx}
+                value={cardData.name} onChange={e => setCardData(d => ({ ...d, name: e.target.value }))} />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField fullWidth label={lang === 'he' ? 'מספר כרטיס' : 'Card Number'} sx={inputSx}
+                value={cardData.number}
+                onChange={e => setCardData(d => ({ ...d, number: formatCardNumber(e.target.value) }))}
+                inputProps={{ maxLength: 19 }} />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField fullWidth label={lang === 'he' ? 'תוקף (MM/YY)' : 'Expiry (MM/YY)'} sx={inputSx}
+                value={cardData.expiry}
+                onChange={e => setCardData(d => ({ ...d, expiry: formatExpiry(e.target.value) }))}
+                inputProps={{ maxLength: 5 }} />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField fullWidth label="CVV" sx={inputSx} type="password"
+                value={cardData.cvv}
+                onChange={e => setCardData(d => ({ ...d, cvv: e.target.value.slice(0, 3) }))}
+                inputProps={{ maxLength: 3 }} />
+            </Grid>
+          </Grid>
+
+          <Box sx={{ mt: 2, p: 1.5, background: 'rgba(52,211,153,0.05)', border: '1px solid rgba(52,211,153,0.15)', borderRadius: '8px', display: 'flex', justifyContent: 'space-between' }}>
+            <Typography sx={{ fontFamily: 'Rubik', color: 'rgba(255,255,255,0.7)' }}>
+              {lang === 'he' ? 'סה"כ לתשלום:' : 'Total:'}
+            </Typography>
+            <Typography sx={{ fontFamily: 'Rubik', fontWeight: 900, color: '#34d399', fontSize: '1.1rem' }}>
+              {totalPrice} ₪
+            </Typography>
+          </Box>
+        </DialogContent>
+
+        <DialogActions sx={{ borderTop: '1px solid rgba(52,211,153,0.15)', p: 2, gap: 1 }}>
+          <Button onClick={() => setPaymentOpen(false)}
+            sx={{ color: 'rgba(255,255,255,0.5)', fontFamily: 'Rubik', border: '1px solid rgba(255,255,255,0.15)', '&:hover': { border: '1px solid rgba(255,255,255,0.3)' } }}>
+            {lang === 'he' ? 'ביטול' : 'Cancel'}
+          </Button>
+          <Button variant="contained" onClick={handlePay} disabled={processing}
+            startIcon={processing ? null : <LockIcon />}
+            sx={{ background: 'linear-gradient(135deg, #34d399, #059669)', fontFamily: 'Rubik', fontWeight: 700, px: 3, boxShadow: '0 0 20px rgba(52,211,153,0.3)', '&:hover': { boxShadow: '0 0 30px rgba(52,211,153,0.5)' } }}>
+            {processing ? (lang === 'he' ? 'מעבד...' : 'Processing...') : (lang === 'he' ? `שלם ${totalPrice} ₪` : `Pay ${totalPrice} ₪`)}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
