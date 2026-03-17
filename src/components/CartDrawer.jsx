@@ -2,10 +2,13 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { updateQty, closeCart } from '../features/cart/cartSlice';
 import './CartDrawer.css';
+import { useNavigate } from "react-router-dom";
+
 
 const CartDrawer = () => {
   const cart = useSelector((state) => state.cart) || { items: [], isOpen: false };
   const { items, isOpen } = cart;
+  const navigate = useNavigate();
   console.log("CartDrawer:", { isOpen, items }); // ← הוסיפי שורה זו
   const dispatch = useDispatch();
 
@@ -55,7 +58,9 @@ const CartDrawer = () => {
               <span>סה"כ:</span>
               <span className="cart-total-price">{total} ₪</span>
             </div>
-            <button className="cart-checkout-btn">המשך לתשלום</button>
+            <button className="cart-checkout-btn" onClick={() => { dispatch(closeCart()); navigate("/basket"); }}>
+               המשך לתשלום
+            </button>
           </div>
         )}
 

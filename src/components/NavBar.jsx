@@ -77,7 +77,7 @@ const NavBar = () => {
 
                     {/* סל קניות */}
                     <Tooltip title={t.basket}>
-                        <IconButton onClick={() => dispatch(toggleCart())} sx={{ color: 'rgba(255,255,255,0.7)', '&:hover': { color: '#34d399' } }}>
+                        <IconButton onClick={() => navigate("/basket")} sx={{ color: 'rgba(255,255,255,0.7)', '&:hover': { color: '#34d399' } }}>
                             <Badge badgeContent={totalItems} color="success">
                                 <ShoppingCartIcon />
                             </Badge>
