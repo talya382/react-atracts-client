@@ -16,9 +16,7 @@ import StepLabel from "@mui/material/StepLabel";
 import LockResetIcon from "@mui/icons-material/LockReset";
 import EmailIcon from "@mui/icons-material/Email";
 import KeyIcon from "@mui/icons-material/Key";
-
-const API_URL = "https://react-atracts-server-beityaakov.onrender.com/auth";
-
+const API_URL = "https://active-attractions.onrender.com/auth";
 const inputSx = {
   '& .MuiOutlinedInput-root': {
     color: '#fff', fontFamily: 'Rubik',
