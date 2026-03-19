@@ -14,6 +14,7 @@ import Notifications from "./components/Notifications";
 import ChatBot from "./components/ChatBot";
 import CartDrawer from "./components/CartDrawer"; 
 import EditProduct from "./pages/EditProduct";
+import ForgotPassword from "./pages/ForgotPassword";
 import "./App.css";
 
 
@@ -56,6 +57,7 @@ function AppContent() {
     <Route path="/top10" element={<Top10 />} />
     <Route path="/list" element={<ProductsList />} />
     <Route path="/edit-product/:id" element={<EditProduct />} />
+    <Route path="/forgot-password" element={<ForgotPassword />} />
     <Route path="/list/:category" element={<SubCategory />} />
     <Route path="/list/:category/:subCategory" element={<ProductsList />} />
     <Route path="/add-product" element={<AddAtraction />} />

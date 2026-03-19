@@ -77,6 +77,7 @@ export default function Login() {
         <Typography sx={{ textAlign: 'center', mt: 2.5, color: 'rgba(255,255,255,0.5)', fontFamily: 'Rubik', fontSize: '0.88rem' }}>
           אין לך חשבון?{' '}
           <Link to="/signup" style={{ color: '#34d399', fontWeight: 600, textDecoration: 'none' }}>הירשם כאן</Link>
+          <Link to="/forgot-password" style={{ color: '#34d399' }}>שכחת סיסמה?</Link>
         </Typography>
       </Box>
     </AuthBackground>
