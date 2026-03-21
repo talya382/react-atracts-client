@@ -46,7 +46,7 @@ export default function ForgotPassword() {
     }
     setLoading(true);
     try {
-      await axios.post(`${API_URL}/forgot`, { email });
+        await axios.post(`${API_URL}/forgot`, { email }, { timeout: 60000 });
       Swal.fire({
         title: '✅ נשלח!',
         text: 'סיסמה זמנית נשלחה למייל שלך',
