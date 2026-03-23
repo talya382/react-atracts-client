@@ -16,29 +16,29 @@ export default function Footer() {
 
         {/* יצירת קשר */}
         <div className="footer-section">
-          <h3>📞 {t.contact}</h3>
+          <h3>{t.contact}</h3>
           <ul>
-            <li>📱 03-555-1234</li>
-            <li>📱 1-800-ATTRACT</li>
-            <li>📧 support@attractions-il.co.il</li>
-            <li>📧 info@attractions-il.co.il</li>
+            <li> 03-555-1234</li>
+            <li> 1-800-ATTRACT</li>
+            <li> support@attractions-il.co.il</li>
+            <li> info@attractions-il.co.il</li>
           </ul>
         </div>
 
         {/* כתובת */}
         <div className="footer-section">
-          <h3>📍 {t.findUs}</h3>
+          <h3> {t.findUs}</h3>
           <ul>
-            <li>🏢 רחוב הברזל 32, תל אביב</li>
-            <li>🏢 רחוב יפו 14, ירושלים</li>
-            <li>🕐 א׳-ה׳: 09:00 - 18:00</li>
-            <li>🕐 ו׳: 09:00 - 13:00</li>
+            <li> רחוב הברזל 32, תל אביב</li>
+            <li> רחוב יפו 14, ירושלים</li>
+            <li> א׳-ה׳: 09:00 - 18:00</li>
+            <li> ו׳: 09:00 - 13:00</li>
           </ul>
         </div>
 
         {/* רשתות חברתיות */}
         <div className="footer-section">
-          <h3>🌐 {t.followUs}</h3>
+          <h3> {t.followUs}</h3>
           <div className="social-icons">
             <div className="social-icon" title="Instagram">
               <svg viewBox="0 0 24 24" fill="currentColor">
