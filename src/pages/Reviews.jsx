@@ -18,7 +18,7 @@ import StarIcon from "@mui/icons-material/Star";
 import SendIcon from "@mui/icons-material/Send";
 import ReviewsIcon from "@mui/icons-material/RateReview";
 
-const API_URL = "http://localhost:3000/reviews";
+const API_URL = "https://active-attractions.onrender.com/reviews";
 
 const inputSx = {
   '& .MuiOutlinedInput-root': {
@@ -89,7 +89,7 @@ export default function Reviews() {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', p: { xs: 2, md: 4 }, direction: 'rtl', maxWidth: 900, mx: 'auto' }}>
+    <Box sx={{ minHeight: '100vh', p: { xs: 2, md: 4 }, pt: { xs: 10, md: 12 }, direction: 'rtl', maxWidth: 900, mx: 'auto' }}>
 
       {/* כותרת */}
       <Box sx={{ textAlign: 'center', mb: 4 }}>

@@ -1,11 +1,23 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const loadCart = () => {
+  try {
+    const saved = localStorage.getItem("cart");
+    return saved ? JSON.parse(saved) : { items: [], isOpen: false };
+  } catch {
+    return { items: [], isOpen: false };
+  }
+};
+
+const saveCart = (state) => {
+  try {
+    localStorage.setItem("cart", JSON.stringify({ items: state.items, isOpen: false }));
+  } catch {}
+};
+
 const cartSlice = createSlice({
   name: "cart",
-  initialState: {
-    items: [],
-    isOpen: false,
-  },
+  initialState: loadCart(),
   reducers: {
     addToCart: (state, action) => {
       const id = action.payload._id || action.payload.id;
@@ -16,6 +28,7 @@ const cartSlice = createSlice({
         state.items.push({ ...action.payload, qty: 1 });
       }
       state.isOpen = true;
+      saveCart(state);
     },
     updateQty: (state, action) => {
       const { id, change } = action.payload;
@@ -26,6 +39,7 @@ const cartSlice = createSlice({
           state.items = state.items.filter(i => (i._id || i.id) !== id);
         }
       }
+      saveCart(state);
     },
     toggleCart: (state) => {
       state.isOpen = !state.isOpen;

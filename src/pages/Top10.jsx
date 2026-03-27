@@ -41,7 +41,7 @@ export default function Top10() {
   );
 
   return (
-    <Box sx={{ minHeight: '100vh', p: { xs: 2, md: 4 }, direction: 'rtl', maxWidth: 900, mx: 'auto' }}>
+    <Box sx={{ minHeight: '100vh', p: { xs: 2, md: 4 }, pt: { xs: 10, md: 12 }, direction: 'rtl', maxWidth: 900, mx: 'auto' }}>
     
       {/* כותרת */}
       <Box sx={{ textAlign: 'center', mb: 4 }}>
