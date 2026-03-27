@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { removeFromBasket, clearBasket, decreaseQty, addToBasket } from "../features/basket/basketSlice";
+import { updateQty, toggleCart, closeCart, addToCart, clearCart } from "../features/cart/cartSlice";
 import { Link } from "react-router-dom";
 import { useLang } from "../LanguageContext";
 import Swal from "sweetalert2";
@@ -41,7 +41,7 @@ const inputSx = {
 
 const Basket = () => {
   const dispatch = useDispatch();
-  const items = useSelector(state => state.basket.arr);
+  const items = useSelector(state => state.cart.items);
   const { lang } = useLang();
   const [paymentOpen, setPaymentOpen] = useState(false);
   const [cardData, setCardData] = useState({ name: '', number: '', expiry: '', cvv: '' });
@@ -63,7 +63,7 @@ const Basket = () => {
       confirmButtonText: lang === 'he' ? 'כן, רוקן!' : 'Yes, clear!',
       cancelButtonText: lang === 'he' ? 'ביטול' : 'Cancel',
       background: '#04140e', color: '#fff',
-    }).then(result => { if (result.isConfirmed) dispatch(clearBasket()); });
+    }).then(result => { if (result.isConfirmed) dispatch(clearCart()); });
   };
 
   const formatCardNumber = (val) => {
@@ -83,7 +83,7 @@ const Basket = () => {
     await new Promise(r => setTimeout(r, 2000));
     setProcessing(false);
     setPaymentOpen(false);
-    dispatch(clearBasket());
+    dispatch(clearCart());
     Swal.fire({
       title: lang === 'he' ? '🎉 התשלום בוצע בהצלחה!' : '🎉 Payment Successful!',
       text: lang === 'he' ? `שולם ${totalPrice} ₪` : `Paid ${totalPrice} ₪`,
@@ -120,17 +120,17 @@ const Basket = () => {
                 <Typography sx={{ color: '#34d399', fontWeight: 600, fontSize: '0.88rem', mt: 0.5 }}>{item.price} ₪ {tr.perPerson}</Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <IconButton size="small" onClick={() => dispatch(decreaseQty(item._id))}
+                <IconButton size="small" onClick={() => dispatch(updateQty({ id: item._id || item.id, change: -1 }))}
                   sx={{ background: 'rgba(52,211,153,0.1)', color: '#34d399', '&:hover': { background: 'rgba(52,211,153,0.2)' } }}>
                   <RemoveIcon fontSize="small" />
                 </IconButton>
                 <Typography sx={{ fontWeight: 700, minWidth: 24, textAlign: 'center' }}>{item.qty}</Typography>
-                <IconButton size="small" onClick={() => dispatch(addToBasket(item))}
+                <IconButton size="small" onClick={() => dispatch(updateQty({ id: item._id || item.id, change: 1 }))}
                   sx={{ background: 'rgba(52,211,153,0.1)', color: '#34d399', '&:hover': { background: 'rgba(52,211,153,0.2)' } }}>
                   <AddIcon fontSize="small" />
                 </IconButton>
                 <Chip label={`${item.price * item.qty} ₪`} sx={{ background: 'rgba(52,211,153,0.15)', color: '#34d399', fontWeight: 700, fontFamily: 'Rubik', mx: 1 }} />
-                <IconButton size="small" onClick={() => dispatch(removeFromBasket(item._id))}
+                <IconButton size="small" onClick={() => dispatch(updateQty({ id: item._id || item.id, change: -99 }))}
                   sx={{ color: 'rgba(239,68,68,0.7)', '&:hover': { color: '#ef4444', background: 'rgba(239,68,68,0.1)' } }}>
                   <DeleteOutlineIcon fontSize="small" />
                 </IconButton>
