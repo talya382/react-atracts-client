@@ -18,8 +18,7 @@ import StarIcon from "@mui/icons-material/Star";
 import SendIcon from "@mui/icons-material/Send";
 import ReviewsIcon from "@mui/icons-material/RateReview";
 
-const API_URL = "https://active-attractions.onrender.com/reviews";
-
+const API_URL = "https://react-atracts-server-beityaakov.onrender.com/reviews";
 const inputSx = {
   '& .MuiOutlinedInput-root': {
     color: '#fff', fontFamily: 'Rubik',
