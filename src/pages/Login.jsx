@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { loginUser } from '../api/userService';
 import { useDispatch } from 'react-redux';
@@ -12,7 +13,11 @@ import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
+import IconButton from "@mui/material/IconButton";
+import InputAdornment from "@mui/material/InputAdornment";
 import LoginIcon from "@mui/icons-material/Login";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 const inputSx = {
   '& .MuiOutlinedInput-root': {
@@ -29,6 +34,7 @@ const inputSx = {
 export default function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
   const { register, handleSubmit, formState: { errors, isSubmitting }, setError } = useForm();
 
   const onSubmit = async (data) => {
@@ -40,7 +46,18 @@ export default function Login() {
       Swal.fire({ title: `שלום, ${user.userName}! 👋`, icon: 'success', timer: 1500, showConfirmButton: false, background: '#04140e', color: '#fff' });
       navigate("/");
     } catch (err) {
-      setError("root", { message: "אימייל או סיסמה שגויים" });
+      const status = err.response?.status;
+      const serverMessage = err.response?.data?.message;
+      
+      if (status === 404) {
+        setError("email", { message: "האימייל לא קיים במערכת" });
+      } else if (status === 401) {
+        setError("password", { message: "הסיסמה שגויה" });
+      } else if (serverMessage) {
+        setError("root", { message: serverMessage });
+      } else {
+        setError("root", { message: "שגיאה בהתחברות, נסה שוב" });
+      }
     }
   };
 
@@ -56,9 +73,20 @@ export default function Login() {
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <TextField fullWidth type="email" label="אימייל" placeholder="your@email.com" sx={inputSx}
               {...register("email", { required: "שדה חובה" })} error={!!errors.email} helperText={errors.email?.message} />
-            <TextField fullWidth type="password" label="סיסמה" placeholder="••••••••" sx={inputSx}
+            
+            <TextField fullWidth type={showPassword ? "text" : "password"} label="סיסמה" placeholder="••••••••" sx={inputSx}
               {...register("password", { required: "שדה חובה", minLength: { value: 4, message: "לפחות 4 תווים" } })}
-              error={!!errors.password} helperText={errors.password?.message} />
+              error={!!errors.password} helperText={errors.password?.message}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={() => setShowPassword(!showPassword)} edge="end"
+                      sx={{ color: 'rgba(52,211,153,0.7)' }}>
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }} />
 
             {errors.root && (
               <Box sx={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '8px', p: 1.5, textAlign: 'center' }}>
@@ -78,9 +106,8 @@ export default function Login() {
           אין לך חשבון?{' '}
           <Link to="/signup" style={{ color: '#34d399', fontWeight: 600, textDecoration: 'none' }}>הירשם כאן</Link>
         </Typography>
-        <Typography sx={{ textAlign: 'center', mt: 2.5, color: 'rgba(255,255,255,0.5)', fontFamily: 'Rubik', fontSize: '0.88rem' }}>
-        <Link to="/forgot-password" style={{ color: '#34d399' }}>שכחת סיסמה?</Link>
-
+        <Typography sx={{ textAlign: 'center', mt: 1.5, color: 'rgba(255,255,255,0.5)', fontFamily: 'Rubik', fontSize: '0.88rem' }}>
+          <Link to="/forgot-password" style={{ color: '#34d399' }}>שכחת סיסמה?</Link>
         </Typography>
       </Box>
     </AuthBackground>

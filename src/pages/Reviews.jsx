@@ -103,7 +103,7 @@ export default function Reviews() {
       <Card sx={{ background: 'rgba(4,20,14,0.92)', border: '1px solid rgba(52,211,153,0.2)', borderRadius: '16px', mb: 4 }}>
         <CardContent sx={{ p: 3 }}>
           <Typography variant="h6" sx={{ fontFamily: 'Rubik', fontWeight: 700, color: '#fff', mb: 2 }}>
-            ✍️ {tr.addReview}
+             {tr.addReview}
           </Typography>
           <form onSubmit={handleSubmit}>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
